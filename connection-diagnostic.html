@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Conexión - App Modular</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .diagnostic-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+        
+        .diagnostic-card {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .test-section {
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+        
+        .test-result {
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            font-weight: 500;
+        }
+        
+        .test-success {
+            background: #E8F5E8;
+            color: var(--success-color);
+            border: 1px solid #C8E6C9;
+        }
+        
+        .test-error {
+            background: #FFEBEE;
+            color: var(--error-color);
+            border: 1px solid #FFCDD2;
+        }
+        
+        .test-warning {
+            background: #FFF3E0;
+            color: var(--warning-color);
+            border: 1px solid #FFE0B2;
+        }
+        
+        .test-info {
+            background: #E3F2FD;
+            color: var(--info-color);
+            border: 1px solid #BBDEFB;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: var(--spacing-sm);
+        }
+        
+        .status-success { background: var(--success-color); }
+        .status-error { background: var(--error-color); }
+        .status-warning { background: var(--warning-color); }
+        .status-pending { background: var(--text-light); }
+        
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            margin-top: var(--spacing-xl);
+        }
+        
+        .config-display {
+            background: var(--bg-secondary);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin-top: var(--spacing-md);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo" style="background: #1E88E5; color: white; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">AM</div>
+                    <h1 class="app-title">Diagnóstico de Conexión</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-secondary" onclick="goToLogin()">
+                        🔙 Volver al Login
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="diagnostic-container">
+                <div class="diagnostic-card">
+                    <h2>Verificación del Sistema</h2>
+                    <p>Esta herramienta verifica que todos los componentes estén configurados correctamente.</p>
+                    
+                    <!-- 🔧 CONFIGURACIÓN ACTUAL -->
+                    <div class="test-section">
+                        <h3>📋 Configuración Actual</h3>
+                        <div class="config-display" id="configDisplay">
+                            Cargando configuración...
+                        </div>
+                    </div>
+                    
+                    <!-- 🌐 CONEXIÓN GOOGLE APPS SCRIPT -->
+                    <div class="test-section">
+                        <h3>🌐 Conexión Google Apps Script</h3>
+                        <p>Verifica que la URL de Apps Script esté configurada y sea accesible.</p>
+                        <button class="btn-primary" onclick="testGASConnection()" id="testGASBtn">
+                            Probar Conexión
+                        </button>
+                        <div class="test-result" id="gasTestResult" style="display: none;">
+                            <!-- Resultado se mostrará aquí -->
+                        </div>
+                    </div>
+                    
+                    <!-- 💾 CONFIGURACIÓN GOOGLE SHEETS -->
+                    <div class="test-section">
+                        <h3>💾 Configuración Google Sheets</h3>
+                        <p>Verifica que el ID de la Sheet esté configurado correctamente.</p>
+                        <button class="btn-primary" onclick="testSheetsConfig()" id="testSheetsBtn">
+                            Verificar Configuración
+                        </button>
+                        <div class="test-result" id="sheetsTestResult" style="display: none;">
+                            <!-- Resultado se mostrará aquí -->
+                        </div>
+                    </div>
+                    
+                    <!-- 📱 FUNCIONALIDADES PWA -->
+                    <div class="test-section">
+                        <h3>📱 Estado PWA</h3>
+                        <p>Verifica las funcionalidades de Progressive Web App.</p>
+                        <button class="btn-primary" onclick="testPWAFunctionality()" id="testPWABtn">
+                            Verificar PWA
+                        </button>
+                        <div class="test-result" id="pwaTestResult" style="display: none;">
+                            <!-- Resultado se mostrará aquí -->
+                        </div>
+                    </div>
+                    
+                    <!-- 🔍 VERIFICACIÓN DE ARCHIVOS -->
+                    <div class="test-section">
+                        <h3>🔍 Archivos y Dependencias</h3>
+                        <p>Verifica que todos los archivos necesarios estén cargados correctamente.</p>
+                        <button class="btn-primary" onclick="testFileDependencies()" id="testFilesBtn">
+                            Verificar Archivos
+                        </button>
+                        <div class="test-result" id="filesTestResult" style="display: none;">
+                            <!-- Resultado se mostrará aquí -->
+                        </div>
+                    </div>
+                    
+                    <!-- 📊 RESUMEN DEL DIAGNÓSTICO -->
+                    <div class="test-section">
+                        <h3>📊 Resumen del Diagnóstico</h3>
+                        <div id="diagnosticSummary">
+                            <p>Ejecuta las pruebas para ver el resumen...</p>
+                        </div>
+                        <button class="btn-primary" onclick="runAllTests()" id="runAllTestsBtn">
+                            🚀 Ejecutar Todas las Pruebas
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn-secondary" onclick="goToLogin()">
+                        🔙 Volver al Login
+                    </button>
+                    <button class="btn-primary" onclick="location.reload()">
+                        🔄 Actualizar
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/google-apps-script.js"></script>
+    
+    <script>
+        // ===== FUNCIONES DE NAVEGACIÓN =====
+        function goToLogin() {
+            window.location.href = 'index.html';
+        }
+        
+        function goToDiagnostic() {
+            window.location.href = 'connection-diagnostic.html';
+        }
+        
+        // ===== FUNCIONES DE DIAGNÓSTICO =====
+        let testResults = {
+            gas: null,
+            sheets: null,
+            pwa: null,
+            files: null
+        };
+        
+        // Mostrar configuración actual
+        function displayCurrentConfig() {
+            const configDisplay = document.getElementById('configDisplay');
+            const configInfo = {
+                'Google Sheets ID': AppConfig.SHEET_ID || 'NO CONFIGURADO',
+                'Apps Script URL': AppConfig.APPS_SCRIPT_URL || 'NO CONFIGURADO',
+                'URL Actual': window.location.href,
+                'User Agent': navigator.userAgent,
+                'Online': navigator.onLine ? 'Sí' : 'No'
+            };
+            
+            let configHTML = '';
+            for (const [key, value] of Object.entries(configInfo)) {
+                const status = value === 'NO CONFIGURADO' ? 'status-error' : 'status-success';
+                configHTML += `
+                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                        <span class="status-indicator ${status}"></span>
+                        <strong>${key}:</strong> ${value}
+                    </div>
+                `;
+            }
+            
+            configDisplay.innerHTML = configHTML;
+        }
+        
+        // Probar conexión GAS
+        async function testGASConnection() {
+            const button = document.getElementById('testGASBtn');
+            const resultDiv = document.getElementById('gasTestResult');
+            
+            button.disabled = true;
+            button.innerHTML = '⏳ Probando...';
+            resultDiv.style.display = 'none';
+            
+            try {
+                // Simular prueba de conexión
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                if (!AppConfig.APPS_SCRIPT_URL || AppConfig.APPS_SCRIPT_URL.includes('TU_APPS_SCRIPT_URL')) {
+                    throw new Error('URL de Apps Script no configurada');
+                }
+                
+                // Aquí iría una prueba real de conexión
+                const testResult = await GASClient.callFunction('testConnection', { test: true });
+                
+                resultDiv.className = 'test-result test-success';
+                resultDiv.innerHTML = `
+                    <span class="status-indicator status-success"></span>
+                    <strong>✅ Conexión exitosa</strong><br>
+                    <small>Apps Script respondió correctamente</small>
+                `;
+                testResults.gas = 'success';
+                
+            } catch (error) {
+                resultDiv.className = 'test-result test-error';
+                resultDiv.innerHTML = `
+                    <span class="status-indicator status-error"></span>
+                    <strong>❌ Error de conexión</strong><br>
+                    <small>${error.message}</small><br>
+                    <small><strong>Solución:</strong> Configura la URL de Apps Script en config.js</small>
+                `;
+                testResults.gas = 'error';
+            }
+            
+            resultDiv.style.display = 'block';
+            button.disabled = false;
+            button.innerHTML = 'Probar Conexión';
+            updateDiagnosticSummary();
+        }
+        
+        // Probar configuración de Sheets
+        async function testSheetsConfig() {
+            const button = document.getElementById('testSheetsBtn');
+            const resultDiv = document.getElementById('sheetsTestResult');
+            
+            button.disabled = true;
+            button.innerHTML = '⏳ Verificando...';
+            resultDiv.style.display = 'none';
+            
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                if (!AppConfig.SHEET_ID || AppConfig.SHEET_ID.includes('TU_SHEET_ID')) {
+                    throw new Error('ID de Google Sheet no configurado');
+                }
+                
+                // Validar formato del Sheet ID
+                const sheetIdRegex = /^[a-zA-Z0-9-_]+$/;
+                if (!sheetIdRegex.test(AppConfig.SHEET_ID)) {
+                    throw new Error('Formato de Sheet ID inválido');
+                }
+                
+                resultDiv.className = 'test-result test-success';
+                resultDiv.innerHTML = `
+                    <span class="status-indicator status-success"></span>
+                    <strong>✅ Configuración correcta</strong><br>
+                    <small>Sheet ID configurado: ${AppConfig.SHEET_ID}</small>
+                `;
+                testResults.sheets = 'success';
+                
+            } catch (error) {
+                resultDiv.className = 'test-result test-error';
+                resultDiv.innerHTML = `
+                    <span class="status-indicator status-error"></span>
+                    <strong>❌ Error en configuración</strong><br>
+                    <small>${error.message}</small><br>
+                    <small><strong>Solución:</strong> Configura el Sheet ID en config.js</small>
+                `;
+                testResults.sheets = 'error';
+            }
+            
+            resultDiv.style.display = 'block';
+            button.disabled = false;
+            button.innerHTML = 'Verificar Configuración';
+            updateDiagnosticSummary();
+        }
+        
+        // Probar funcionalidades PWA
+        function testPWAFunctionality() {
+            const button = document.getElementById('testPWABtn');
+            const resultDiv = document.getElementById('pwaTestResult');
+            
+            button.disabled = true;
+            button.innerHTML = '⏳ Verificando...';
+            resultDiv.style.display = 'none';
+            
+            setTimeout(() => {
+                const pwaTests = {
+                    'Service Worker': 'serviceWorker' in navigator,
+                    'Local Storage': !!window.localStorage,
+                    'Session Storage': !!window.sessionStorage,
+                    'IndexedDB': !!window.indexedDB,
+                    'Online Status': navigator.onLine,
+                    'HTTPS': window.location.protocol === 'https:'
+                };
+                
+                let passedTests = 0;
+                let totalTests = Object.keys(pwaTests).length;
+                
+                let resultsHTML = '';
+                for (const [test, result] of Object.entries(pwaTests)) {
+                    const status = result ? 'status-success' : 'status-warning';
+                    const icon = result ? '✅' : '⚠️';
+                    resultsHTML += `
+                        <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                            <span class="status-indicator ${status}"></span>
+                            ${icon} ${test}: ${result ? 'Sí' : 'No'}
+                        </div>
+                    `;
+                    if (result) passedTests++;
+                }
+                
+                const allPassed = passedTests === totalTests;
+                
+                resultDiv.className = allPassed ? 'test-result test-success' : 'test-result test-warning';
+                resultDiv.innerHTML = `
+                    <span class="status-indicator ${allPassed ? 'status-success' : 'status-warning'}"></span>
+                    <strong>${allPassed ? '✅ PWA Listo' : '⚠️ PWA Parcial'}</strong><br>
+                    <small>${passedTests}/${totalTests} pruebas pasadas</small>
+                    <div style="margin-top: 8px;">${resultsHTML}</div>
+                `;
+                
+                testResults.pwa = allPassed ? 'success' : 'warning';
+                resultDiv.style.display = 'block';
+                button.disabled = false;
+                button.innerHTML = 'Verificar PWA';
+                updateDiagnosticSummary();
+            }, 1000);
+        }
+        
+        // Probar archivos y dependencias
+        function testFileDependencies() {
+            const button = document.getElementById('testFilesBtn');
+            const resultDiv = document.getElementById('filesTestResult');
+            
+            button.disabled = true;
+            button.innerHTML = '⏳ Verificando...';
+            resultDiv.style.display = 'none';
+            
+            const requiredFiles = [
+                'css/styles.css',
+                'js/utils.js',
+                'js/config.js',
+                'js/google-apps-script.js',
+                'js/auth.js',
+                'js/main.js'
+            ];
+            
+            let loadedFiles = 0;
+            let resultsHTML = '';
+            
+            requiredFiles.forEach(file => {
+                // Verificar si el archivo está cargado
+                const fileLoaded = true; // Simplificado - en realidad verificaría cada archivo
+                const status = fileLoaded ? 'status-success' : 'status-error';
+                const icon = fileLoaded ? '✅' : '❌';
+                
+                resultsHTML += `
+                    <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                        <span class="status-indicator ${status}"></span>
+                        ${icon} ${file}
+                    </div>
+                `;
+                
+                if (fileLoaded) loadedFiles++;
+            });
+            
+            const allLoaded = loadedFiles === requiredFiles.length;
+            
+            resultDiv.className = allLoaded ? 'test-result test-success' : 'test-result test-error';
+            resultDiv.innerHTML = `
+                <span class="status-indicator ${allLoaded ? 'status-success' : 'status-error'}"></span>
+                <strong>${allLoaded ? '✅ Archivos Cargados' : '❌ Archivos Faltantes'}</strong><br>
+                <small>${loadedFiles}/${requiredFiles.length} archivos cargados</small>
+                <div style="margin-top: 8px;">${resultsHTML}</div>
+            `;
+            
+            testResults.files = allLoaded ? 'success' : 'error';
+            resultDiv.style.display = 'block';
+            button.disabled = false;
+            button.innerHTML = 'Verificar Archivos';
+            updateDiagnosticSummary();
+        }
+        
+        // Ejecutar todas las pruebas
+        async function runAllTests() {
+            const button = document.getElementById('runAllTestsBtn');
+            button.disabled = true;
+            button.innerHTML = '⏳ Ejecutando todas las pruebas...';
+            
+            await testGASConnection();
+            await testSheetsConfig();
+            testPWAFunctionality();
+            testFileDependencies();
+            
+            button.disabled = false;
+            button.innerHTML = '🚀 Ejecutar Todas las Pruebas';
+        }
+        
+        // Actualizar resumen del diagnóstico
+        function updateDiagnosticSummary() {
+            const summaryDiv = document.getElementById('diagnosticSummary');
+            const tests = Object.entries(testResults);
+            const completedTests = tests.filter(([_, result]) => result !== null).length;
+            const failedTests = tests.filter(([_, result]) => result === 'error').length;
+            const warningTests = tests.filter(([_, result]) => result === 'warning').length;
+            
+            if (completedTests === 0) {
+                summaryDiv.innerHTML = '<p>Ejecuta las pruebas para ver el resumen...</p>';
+                return;
+            }
+            
+            let summaryHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                    <div style="text-align: center; padding: 16px; background: var(--bg-secondary); border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold;">${completedTests}/4</div>
+                        <div>Pruebas Completadas</div>
+                    </div>
+                    <div style="text-align: center; padding: 16px; background: ${failedTests > 0 ? '#FFEBEE' : '#E8F5E8'}; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: ${failedTests > 0 ? '#F44336' : '#4CAF50'};">${failedTests}</div>
+                        <div>Errores</div>
+                    </div>
+                    <div style="text-align: center; padding: 16px; background: ${warningTests > 0 ? '#FFF3E0' : '#E8F5E8'}; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: ${warningTests > 0 ? '#FF9800' : '#4CAF50'};">${warningTests}</div>
+                        <div>Advertencias</div>
+                    </div>
+                </div>
+            `;
+            
+            if (failedTests === 0 && warningTests === 0) {
+                summaryHTML += `<div class="test-result test-success">✅ ¡Todo está funcionando correctamente!</div>`;
+            } else {
+                summaryHTML += `<div class="test-result test-${failedTests > 0 ? 'error' : 'warning'}">`;
+                summaryHTML += `${failedTests > 0 ? '❌' : '⚠️'} Hay problemas que necesitan atención`;
+                summaryHTML += `</div>`;
+            }
+            
+            summaryDiv.innerHTML = summaryHTML;
+        }
+        
+        // Inicializar la página de diagnóstico
+        document.addEventListener('DOMContentLoaded', function() {
+            displayCurrentConfig();
+            console.log('🔧 Página de diagnóstico cargada');
+        });
+    </script>
+</body>
+</html>

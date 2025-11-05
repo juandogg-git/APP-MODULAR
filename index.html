@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- ===== META INFORMACIÓN BÁSICA ===== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Modular PWA</title>
+    <meta name="description" content="Aplicación Web Modular Progresiva">
+    <meta name="theme-color" content="#1E88E5">
+    
+    <!-- ===== PWA CONFIGURATION ===== -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- ===== STYLESHEETS ===== -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- ===== FAVICON & ICONS ===== -->
+    <link rel="icon" type="image/png" href="assets/icons/icon-192x192.png">
+    
+    <!-- ===== EXTERNAL DEPENDENCIES ===== -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <!-- ===== APP CONTAINER ===== -->
+    <div class="app-container">
+        
+        <!-- ===== HEADER SECTION ===== -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo" id="appLogo" style="background: #1E88E5; color: white; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">AM</div>
+                    <h1 class="app-title">App Modular</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-secondary" id="installBtn" style="display: none;">
+                        📱 Instalar App
+                    </button>
+                    <button class="btn-logout" id="logoutBtn" style="display: none;">
+                        🚪 Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== MAIN NAVIGATION ===== -->
+        <nav class="main-nav" id="mainNav" style="display: none;">
+            <div class="nav-container">
+                <div class="nav-menu">
+                    <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                        📊 Dashboard
+                    </a>
+                    <a href="#users" class="nav-item" data-section="users">
+                        👥 Usuarios
+                    </a>
+                    <a href="#settings" class="nav-item" data-section="settings">
+                        ⚙️ Configuración
+                    </a>
+                </div>
+                <div class="nav-user">
+                    <span id="userGreeting">Hola, Usuario</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ===== MAIN CONTENT AREA ===== -->
+        <main class="main-content">
+            
+            <!-- ===== LOGIN SECTION ===== -->
+            <section class="login-section" id="loginSection">
+                <div class="login-container">
+                    <div class="login-card">
+                        <div class="login-header">
+                            <h2>Iniciar Sesión</h2>
+                            <p>Accede a tu cuenta para continuar</p>
+                        </div>
+
+                        <!-- 📝 Formulario de login con email -->
+                        <form class="login-form" id="loginForm">
+                            <div class="form-group">
+                                <label for="email">Correo Electrónico</label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email" 
+                                    required 
+                                    placeholder="usuario@ejemplo.com"
+                                    autocomplete="email"
+                                >
+                                <span class="error-message" id="emailError"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Contraseña</label>
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    required 
+                                    placeholder="••••••••"
+                                    autocomplete="current-password"
+                                >
+                                <span class="error-message" id="passwordError"></span>
+                            </div>
+                            
+                            <div class="form-options">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="rememberMe">
+                                    <span class="checkmark"></span>
+                                    Recordarme
+                                </label>
+                                <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary login-btn" id="loginBtn">
+                                <span class="btn-text">Iniciar Sesión</span>
+                                <span class="btn-loading" style="display: none;">⏳ Cargando...</span>
+                            </button>
+                        </form>
+                        
+                        <div class="divider">
+                            <span>o continuar con</span>
+                        </div>
+                        
+                        <!-- 🔵 Botón Google Sign-In -->
+                        <div class="social-login">
+                            <div id="g_id_onload"
+                                data-client_id="TU_CLIENT_ID_GOOGLE"
+                                data-context="signin"
+                                data-ux_mode="popup"
+                                data-callback="handleGoogleSignIn"
+                                data-auto_prompt="false">
+                            </div>
+                            <div class="g_id_signin"
+                                data-type="standard"
+                                data-shape="rectangular"
+                                data-theme="outline"
+                                data-text="signin_with"
+                                data-size="large"
+                                data-logo_alignment="left">
+                            </div>
+                        </div>
+                        
+                        <!-- 🛠️ BOTÓN DIAGNÓSTICO - AHORA DENTRO DEL LOGIN-CARD -->
+                        <div class="diagnostic-section">
+                            <button class="btn-diagnostic" id="diagnosticBtn" onclick="window.location.href = 'connection-diagnostic.html'">
+                                🛠️ Diagnóstico de Conexión
+                            </button>
+                            <p class="diagnostic-help">
+                                ¿Problemas de conexión? Verifica la configuración
+                            </p>
+                        </div>
+
+                        <div class="login-footer">
+                            <p>¿No tienes cuenta? <a href="#" id="registerLink">Regístrate aquí</a></p>
+                        </div>
+                    </div>
+                    
+                    <!-- ⏳ Overlay de carga durante login -->
+                    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <p>Verificando credenciales...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== DASHBOARD SECTION ===== -->
+            <section class="dashboard-section" id="dashboardSection" style="display: none;">
+                <div class="dashboard-container">
+                    <nav class="breadcrumbs" id="breadcrumbs">
+                        <a href="#dashboard" class="breadcrumb-item">Dashboard</a>
+                    </nav>
+
+                    <div class="section-content">
+                        <div class="section-pane active" id="dashboardPane">
+                            <div class="section-header">
+                                <h2>Dashboard Principal</h2>
+                                <p>Resumen y estadísticas de la aplicación</p>
+                            </div>
+
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <div class="metric-icon">👥</div>
+                                    <div class="metric-info">
+                                        <h3 id="totalUsers">0</h3>
+                                        <p>Usuarios Totales</p>
+                                    </div>
+                                    <div class="metric-trend up">+12%</div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <div class="metric-icon">🔐</div>
+                                    <div class="metric-info">
+                                        <h3 id="activeSessions">0</h3>
+                                        <p>Sesiones Activas</p>
+                                    </div>
+                                    <div class="metric-trend down">-5%</div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <div class="metric-icon">📈</div>
+                                    <div class="metric-info">
+                                        <h3 id="totalLogins">0</h3>
+                                        <p>Inicios de Sesión</p>
+                                    </div>
+                                    <div class="metric-trend up">+8%</div>
+                                </div>
+                            </div>
+
+                            <div class="recent-activity">
+                                <h3>Actividad Reciente</h3>
+                                <div class="activity-list" id="recentActivityList">
+                                    <div class="activity-item">
+                                        <div class="activity-icon">🔐</div>
+                                        <div class="activity-content">
+                                            <p>Sesión iniciada correctamente</p>
+                                            <span class="activity-time">Hace unos segundos</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-pane" id="usersPane">
+                            <div class="section-header">
+                                <h2>Gestión de Usuarios</h2>
+                                <p>Administra los usuarios del sistema</p>
+                            </div>
+
+                            <div class="empty-state">
+                                <div class="empty-icon">👥</div>
+                                <p>Módulo de usuarios - En desarrollo</p>
+                                <button class="btn-primary" onclick="AppUtils.showToast('Módulo en desarrollo', 'info')">
+                                    Próximamente
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="section-pane" id="settingsPane">
+                            <div class="section-header">
+                                <h2>Configuración de la Aplicación</h2>
+                                <p>Personaliza el comportamiento del sistema</p>
+                            </div>
+
+                            <div class="empty-state">
+                                <div class="empty-icon">⚙️</div>
+                                <p>Módulo de configuración - En desarrollo</p>
+                                <button class="btn-primary" onclick="AppUtils.showToast('Módulo en desarrollo', 'info')">
+                                    Próximamente
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p>&copy; 2024 App Modular PWA. v1.0.0</p>
+                <div class="footer-links">
+                    <a href="#" class="footer-link" onclick="AppUtils.showToast('En desarrollo', 'info')">Soporte</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 💬 Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ===== JAVASCRIPT FILES ===== -->
+    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/google-apps-script.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+
+    <!-- ===== GOOGLE SIGN-IN HANDLER ===== -->
+    <script>
+    function handleGoogleSignIn(response) {
+        console.log('Google Sign-In response:', response);
+        AppUtils.showToast('Inicio con Google - En desarrollo', 'info');
+    }
+    </script>
+
+    <!-- ===== SWITCH MODO OSCURO ===== -->
+    <div class="theme-switch">
+        <button class="theme-switch-btn" id="themeSwitch" onclick="toggleDarkMode()">
+            🌙
+        </button>
+    </div>
+
+    <script>
+        // ===== TOGGLE MODO OSCURO =====
+        function toggleDarkMode() {
+            const body = document.body;
+            const themeBtn = document.getElementById('themeSwitch');
+            
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                themeBtn.innerHTML = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeBtn.innerHTML = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Cargar tema guardado al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeBtn = document.getElementById('themeSwitch');
+            
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeBtn.innerHTML = '☀️';
+            } else {
+                themeBtn.innerHTML = '🌙';
+            }
+        });
+    </script>
+</body>
+</html>

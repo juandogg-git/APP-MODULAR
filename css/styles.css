@@ -1,0 +1,1371 @@
+/* ==========================================================================
+   VARIABLES GLOBALES Y CONFIGURACIÓN
+   ========================================================================== */
+
+/* === PALETA DE COLORES - MODO CLARO === */
+:root {
+  /* Colores primarios - Azul corporativo */
+  --primary-color: #1E88E5;
+  --primary-dark: #1565C0;
+  --primary-light: #64B5F6;
+  --secondary-color: #78909C;
+  --accent-color: #00BFA5;
+  
+  /* Escala de grises para texto */
+  --text-primary: #263238;
+  --text-secondary: #546E7A;
+  --text-light: #90A4AE;
+  --text-white: #FFFFFF;
+  
+  /* Fondos base */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F7FA;
+  --bg-dark: #263238;
+  
+  /* Colores de estado - Feedback visual */
+  --success-color: #4CAF50;
+  --warning-color: #FF9800;
+  --error-color: #F44336;
+  --info-color: #2196F3;
+  
+  /* Sistema de espaciado - Escala 4px */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-xxl: 3rem;     /* 48px */
+  
+  /* Sistema de bordes */
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --border-color: #E0E0E0;
+  
+  /* Sistema de sombras - Profundidad visual */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+  
+  /* Transiciones - Consistencia en animaciones */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}
+
+/* === PALETA DE COLORES - MODO OSCURO === */
+/* Nota: Estas variables se activan cuando body tiene clase .dark-mode */
+:root {
+  --dark-bg-primary: #1E1E1E;
+  --dark-bg-secondary: #2D2D2D;
+  --dark-bg-card: #363636;
+  --dark-text-primary: #FFFFFF;
+  --dark-text-secondary: #B0B0B0;
+  --dark-border-color: #404040;
+}
+
+/* ==========================================================================
+   RESET Y CONFIGURACIÓN BASE
+   ========================================================================== */
+
+/* Reset moderno - Normaliza comportamiento entre navegadores */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Configuración base de tipografía y accesibilidad */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth; /* Navegación suave para anclas */
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL - ESTRUCTURA DE LA APP
+   ========================================================================== */
+
+/* Contenedor principal - Flexbox column para sticky footer */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   COMPONENTE HEADER - BARRA SUPERIOR
+   ========================================================================== */
+
+.app-header {
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* Asegura que esté por encima del contenido */
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Logo y título de la aplicación */
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius);
+}
+
+.app-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* Acciones del header (instalar app, logout) */
+.header-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+/* ==========================================================================
+   COMPONENTE NAVEGACIÓN - BARRA DE NAVEGACIÓN
+   ========================================================================== */
+
+.main-nav {
+  background: var(--bg-dark);
+  color: var(--text-white);
+  display: none; /* Oculto inicialmente - se muestra después del login */
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--spacing-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Menú de navegación principal */
+.nav-menu {
+  display: flex;
+  gap: var(--spacing-xl);
+}
+
+.nav-item {
+  color: var(--text-white);
+  text-decoration: none;
+  padding: var(--spacing-md) 0;
+  position: relative;
+  transition: var(--transition-fast);
+  opacity: 0.8;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  opacity: 1;
+}
+
+/* Indicador visual de página activa */
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-color);
+}
+
+/* Información del usuario en navegación */
+.nav-user {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* ==========================================================================
+   CONTENIDO PRINCIPAL - ÁREA CENTRAL DE LA APP
+   ========================================================================== */
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   MÓDULO LOGIN - PANTALLA DE INICIO DE SESIÓN
+   ========================================================================== */
+
+.login-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  min-height: calc(100vh - 80px); /* Altura completa menos header */
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+}
+
+/* Tarjeta de login - Contenedor principal del formulario */
+.login-card {
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xxl);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+}
+
+/* Encabezado del login */
+.login-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.login-header h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.login-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   COMPONENTES DE FORMULARIOS - REUTILIZABLES
+   ========================================================================== */
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Grupo de formulario - Label + Input + Error */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.form-group input {
+  padding: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  transition: var(--transition-fast);
+  background: var(--bg-primary);
+}
+
+/* Estados del input */
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+}
+
+.form-group input:invalid {
+  border-color: var(--error-color);
+}
+
+/* Mensajes de error */
+.error-message {
+  color: var(--error-color);
+  font-size: 0.8rem;
+  min-height: 1rem;
+  display: block;
+}
+
+/* ==========================================================================
+   COMPONENTE CHECKBOX PERSONALIZADO
+   ========================================================================== */
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.checkbox-container input[type="checkbox"] {
+  display: none; /* Oculta el checkbox nativo */
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+/* Estados del checkbox personalizado */
+.checkbox-container input[type="checkbox"]:checked + .checkmark {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkbox-container input[type="checkbox"]:checked + .checkmark::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+}
+
+/* Opciones del formulario (recordarme, olvidé contraseña) */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.forgot-password {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.forgot-password:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   SISTEMA DE BOTONES - COMPONENTES REUTILIZABLES
+   ========================================================================== */
+
+/* Botón primario - Acción principal */
+.btn-primary {
+  background: var(--primary-color);
+  color: var(--text-white);
+  border: none;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Botón secundario - Acción alternativa */
+.btn-secondary {
+  background: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background: var(--primary-color);
+  color: var(--text-white);
+}
+
+/* Botón de logout - Acción destructiva */
+.btn-logout {
+  background: var(--error-color);
+  color: var(--text-white);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-logout:hover {
+  background: #D32F2F;
+}
+
+/* Estados de carga para botones */
+.login-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-text, .btn-loading {
+  transition: var(--transition-fast);
+}
+
+.btn-loading {
+  position: absolute;
+}
+
+/* ==========================================================================
+   COMPONENTES DE SEPARACIÓN Y DIVISORES
+   ========================================================================== */
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: var(--spacing-lg) 0;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.divider span {
+  padding: 0 var(--spacing-md);
+}
+
+/* ==========================================================================
+   MÓDULO LOGIN SOCIAL - GOOGLE SIGN-IN
+   ========================================================================== */
+
+.social-login {
+  display: flex;
+  justify-content: center;
+}
+
+#googleLoginBtn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   COMPONENTE FOOTER DEL LOGIN
+   ========================================================================== */
+
+.login-footer {
+  text-align: center;
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.login-footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   MÓDULO DIAGNÓSTICO - BOTÓN Y SECCIÓN
+   ========================================================================== */
+
+.diagnostic-section {
+  text-align: center;
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Botón de diagnóstico - Estilo mejorado */
+.btn-diagnostic {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: var(--spacing-sm);
+  width: 100%;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-diagnostic:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.btn-diagnostic:active {
+  transform: translateY(0);
+}
+
+.diagnostic-help {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   COMPONENTE LOADING OVERLAY - PANTALLAS DE CARGA
+   ========================================================================== */
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-lg);
+  z-index: 10;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   MÓDULO DASHBOARD - PANEL PRINCIPAL (OCULTO INICIALMENTE)
+   ========================================================================== */
+
+.dashboard-section {
+  display: none; /* Oculto hasta el login */
+  flex: 1;
+  padding: var(--spacing-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ==========================================================================
+   COMPONENTE FOOTER GLOBAL
+   ========================================================================== */
+
+.app-footer {
+  background: var(--bg-dark);
+  color: var(--text-white);
+  padding: var(--spacing-lg);
+  margin-top: auto; /* Empuja el footer al fondo */
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.footer-links {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.footer-link {
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: var(--transition-fast);
+}
+
+.footer-link:hover {
+  color: var(--text-white);
+}
+
+/* ==========================================================================
+   COMPONENTES DEL DASHBOARD - ESTRUCTURA INTERNA
+   ========================================================================== */
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Migas de pan - Navegación secundaria */
+.breadcrumbs {
+  margin-bottom: var(--spacing-lg);
+  font-size: 0.9rem;
+}
+
+.breadcrumb-item {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.breadcrumb-item:hover {
+  color: var(--primary-color);
+}
+
+/* Contenedor de secciones del dashboard */
+.section-content {
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Paneles de sección - Sistema de pestañas */
+.section-pane {
+  display: none;
+}
+
+.section-pane.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Encabezado de sección */
+.section-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.section-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.section-header p {
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   COMPONENTE GRID DE MÉTRICAS - TARJETAS DE ESTADÍSTICAS
+   ========================================================================== */
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.metric-card {
+  background: var(--bg-secondary);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  border-left: 4px solid var(--primary-color);
+}
+
+.metric-icon {
+  font-size: 2rem;
+}
+
+.metric-info h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.metric-info p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Indicadores de tendencia */
+.metric-trend {
+  margin-left: auto;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.metric-trend.up {
+  background: #E8F5E8;
+  color: var(--success-color);
+}
+
+.metric-trend.down {
+  background: #FFEBEE;
+  color: var(--error-color);
+}
+
+.metric-trend.stable {
+  background: #FFF3E0;
+  color: var(--warning-color);
+}
+
+/* ==========================================================================
+   COMPONENTE ACTIVIDAD RECIENTE - LISTA DE EVENTOS
+   ========================================================================== */
+
+.recent-activity {
+  margin-top: var(--spacing-xl);
+}
+
+.recent-activity h3 {
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-primary);
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+}
+
+.activity-icon {
+  font-size: 1.2rem;
+}
+
+.activity-content p {
+  margin-bottom: var(--spacing-xs);
+  color: var(--text-primary);
+}
+
+.activity-time {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+/* ==========================================================================
+   COMPONENTE ESTADO VACÍO - PANTALLAS SIN DATOS
+   ========================================================================== */
+
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xxl);
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* ==========================================================================
+   COMPONENTE TOAST NOTIFICATIONS - MENSAJES FLOTANTES
+   ========================================================================== */
+
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  min-width: 300px;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Variantes de toast por tipo */
+.toast-success {
+  border-left: 4px solid var(--success-color);
+}
+
+.toast-error {
+  border-left: 4px solid var(--error-color);
+}
+
+.toast-warning {
+  border-left: 4px solid var(--warning-color);
+}
+
+.toast-info {
+  border-left: 4px solid var(--info-color);
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-close:hover {
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   MÓDULO MODO OSCURO - TOGGLE Y ESTILOS
+   ========================================================================== */
+
+/* Switch flotante para cambio de tema */
+.theme-switch {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.theme-switch-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.3s ease;
+}
+
+.theme-switch-btn:hover {
+  transform: scale(1.1);
+  background: var(--primary-dark);
+}
+
+/* ==========================================================================
+   ESTILOS MODO OSCURO - SOBREESCRITURAS
+   ========================================================================== */
+
+body.dark-mode {
+  background-color: var(--dark-bg-primary);
+  color: var(--dark-text-primary);
+}
+
+/* Header en modo oscuro */
+body.dark-mode .app-header {
+  background: var(--dark-bg-card);
+  border-bottom: 1px solid var(--dark-border-color);
+}
+
+body.dark-mode .app-title {
+  color: var(--dark-text-primary);
+}
+
+/* Login card en modo oscuro */
+body.dark-mode .login-card {
+  background: var(--dark-bg-card);
+  color: var(--dark-text-primary);
+}
+
+body.dark-mode .login-header h2 {
+  color: var(--dark-text-primary);
+}
+
+body.dark-mode .login-header p {
+  color: var(--dark-text-secondary);
+}
+
+/* Formularios en modo oscuro */
+body.dark-mode .form-group label {
+  color: var(--dark-text-primary);
+}
+
+body.dark-mode .form-group input {
+  background: var(--dark-bg-secondary);
+  border-color: var(--dark-border-color);
+  color: var(--dark-text-primary);
+}
+
+body.dark-mode .form-group input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
+}
+
+body.dark-mode .form-group input::placeholder {
+  color: var(--dark-text-secondary);
+}
+
+/* Componentes varios en modo oscuro */
+body.dark-mode .checkmark {
+  border-color: var(--dark-border-color);
+  background: var(--dark-bg-secondary);
+}
+
+body.dark-mode .checkbox-container {
+  color: var(--dark-text-secondary);
+}
+
+body.dark-mode .divider::before,
+body.dark-mode .divider::after {
+  border-bottom-color: var(--dark-border-color);
+}
+
+body.dark-mode .divider span {
+  color: var(--dark-text-secondary);
+}
+
+body.dark-mode .diagnostic-section {
+  border-top-color: var(--dark-border-color);
+}
+
+body.dark-mode .diagnostic-help {
+  color: var(--dark-text-secondary);
+}
+
+body.dark-mode .loading-overlay {
+  background: rgba(30, 30, 30, 0.95);
+}
+
+body.dark-mode .toast {
+  background: var(--dark-bg-card);
+  color: var(--dark-text-primary);
+}
+
+body.dark-mode .dashboard-section {
+  background: var(--dark-bg-primary);
+}
+
+body.dark-mode .section-content {
+  background: var(--dark-bg-card);
+  color: var(--dark-text-primary);
+}
+
+body.dark-mode .section-header h2 {
+  color: var(--dark-text-primary);
+}
+
+body.dark-mode .section-header p {
+  color: var(--dark-text-secondary);
+}
+
+body.dark-mode .metric-card {
+  background: var(--dark-bg-secondary);
+}
+
+body.dark-mode .metric-info h3 {
+  color: var(--dark-text-primary);
+}
+
+body.dark-mode .metric-info p {
+  color: var(--dark-text-secondary);
+}
+
+body.dark-mode .recent-activity h3 {
+  color: var(--dark-text-primary);
+}
+
+body.dark-mode .activity-item {
+  background: var(--dark-bg-secondary);
+}
+
+body.dark-mode .activity-content p {
+  color: var(--dark-text-primary);
+}
+
+body.dark-mode .activity-time {
+  color: var(--dark-text-secondary);
+}
+
+body.dark-mode .app-footer {
+  background: var(--dark-bg-card);
+  border-top: 1px solid var(--dark-border-color);
+}
+
+body.dark-mode .footer-link {
+  color: var(--dark-text-secondary);
+}
+
+body.dark-mode .footer-link:hover {
+  color: var(--dark-text-primary);
+}
+
+body.dark-mode .theme-switch-btn {
+  background: var(--accent-color);
+}
+
+body.dark-mode .theme-switch-btn:hover {
+  background: #00a98e;
+}
+
+/* ==========================================================================
+   UTILIDADES - CLASES HELPER REUTILIZABLES
+   ========================================================================== */
+
+/* Utilidades de visualización */
+.hidden {
+  display: none !important;
+}
+
+.visible {
+  display: flex !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-error {
+  color: var(--error-color);
+}
+
+.text-success {
+  color: var(--success-color);
+}
+
+/* Estados de carga */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Animaciones de entrada */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Focus visible para accesibilidad */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   MEJORAS DE SCROLL - PERSONALIZACIÓN DE SCROLLBARS
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-light);
+}
+
+/* ==========================================================================
+   MEDIA QUERIES - DISEÑO RESPONSIVE
+   ========================================================================== */
+
+/* Tablet - 768px y menos */
+@media (max-width: 768px) {
+  .header-content {
+    padding: var(--spacing-md);
+  }
+  
+  .app-title {
+    font-size: 1.25rem;
+  }
+  
+  .login-section {
+    padding: var(--spacing-md);
+  }
+  
+  .login-card {
+    padding: var(--spacing-xl);
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-sm);
+  }
+  
+  .footer-links {
+    gap: var(--spacing-md);
+  }
+  
+  .dashboard-container {
+    padding: var(--spacing-md);
+  }
+  
+  .section-content {
+    padding: var(--spacing-lg);
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .toast {
+    min-width: auto;
+    left: 20px;
+    right: 20px;
+  }
+}
+
+/* Mobile - 480px y menos */
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .login-card {
+    padding: var(--spacing-lg);
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .logo-section {
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   CORRECCIONES CRÍTICAS - CENTRADO Y ALINEACIÓN
+   ========================================================================== */
+
+/**
+ * CORRECCIÓN: Asegurar que el login esté perfectamente centrado
+ * @description Soluciona el problema de elementos desplazados a la izquierda
+ */
+
+/* 🔧 CORRECCIÓN PRINCIPAL: Forzar centrado del contenedor de login */
+.login-container {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: 400px !important;
+}
+
+/* 🔧 CORRECCIÓN: Asegurar que la tarjeta ocupe todo el ancho disponible */
+.login-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+}
+
+/* 🔧 CORRECCIÓN: Elementos del formulario al 100% de ancho */
+.login-form {
+    width: 100% !important;
+}
+
+.form-group {
+    width: 100% !important;
+}
+
+.form-group input {
+    width: 100% !important;
+}
+
+/* 🔧 CORRECCIÓN: Botones al 100% de ancho */
+.btn-primary,
+.btn-diagnostic {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* 🔧 CORRECCIÓN: Sección social login al 100% */
+.social-login {
+    width: 100% !important;
+}
+
+#googleLoginBtn {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+/* 🔧 CORRECCIÓN: Diagnostic section al 100% */
+.diagnostic-section {
+    width: 100% !important;
+    text-align: center !important;
+}
+
+/* 🔧 CORRECCIÓN: Asegurar que el body no tenga márgenes no deseados */
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 🔧 CORRECCIÓN: Main content sin restricciones de ancho */
+.main-content {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* 🔧 CORRECCIÓN: Login section ocupando todo el ancho disponible */
+.login-section {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* ==========================================================================
+   DEBUGGING VISUAL - QUITAR DESPUÉS DE VERIFICAR
+   ========================================================================== */
+
+/**
+ * Estilos temporales para identificar problemas de layout
+ * Eliminar estos estilos después de que todo esté centrado
+ */
+
+/* .login-container {
+    border: 2px solid red !important;
+}
+
+.login-card {
+    border: 2px solid blue !important;
+}
+
+.login-form {
+    border: 2px solid green !important;
+} */
+
+/* ==========================================================================
+   CORRECCIONES ESPECÍFICAS PARA ELEMENTOS INTERNOS
+   ========================================================================== */
+
+/* 🔧 Asegurar que todos los elementos internos estén alineados correctamente */
+.login-header {
+    text-align: center !important;
+    width: 100% !important;
+}
+
+.login-footer {
+    text-align: center !important;
+    width: 100% !important;
+}
+
+.divider {
+    width: 100% !important;
+}
+
+/* 🔧 Corrección para el botón de Google Sign-In */
+.g_id_signin {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+/* 🔧 Corrección para el contenedor de Google Sign-In */
+#g_id_onload {
+    width: 100% !important;
+}
+
+/* ==========================================================================
+   MEDIA QUERIES PARA CORRECCIONES RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .login-container {
+        padding: 0 var(--spacing-md) !important;
+    }
+    
+    .login-card {
+        padding: var(--spacing-xl) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 0 var(--spacing-sm) !important;
+    }
+    
+    .login-card {
+        padding: var(--spacing-lg) !important;
+    }
+}

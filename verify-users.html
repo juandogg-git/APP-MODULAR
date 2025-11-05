@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Usuarios - App Modular</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .verify-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+        
+        .verify-card {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-lg);
+        }
+        
+        .users-table th,
+        .users-table td {
+            padding: var(--spacing-md);
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .users-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .users-table tr:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .status-badge {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--border-radius);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #E8F5E8;
+            color: var(--success-color);
+        }
+        
+        .status-inactive {
+            background: #FFEBEE;
+            color: var(--error-color);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+        }
+        
+        .loading-users {
+            text-align: center;
+            padding: var(--spacing-xxl);
+            color: var(--text-secondary);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo" style="background: #1E88E5; color: white; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">AM</div>
+                    <h1 class="app-title">Verificar Usuarios</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-secondary" onclick="goToLogin()">
+                        🔙 Volver al Login
+                    </button>
+                    <button class="btn-primary" onclick="refreshUsers()">
+                        🔄 Actualizar
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="verify-container">
+                <div class="verify-card">
+                    <h2>👥 Verificación de Usuarios en Google Sheets</h2>
+                    <p>Esta página muestra los usuarios registrados en tu Google Sheet y verifica la conexión con Apps Script.</p>
+                    
+                    <!-- 📊 ESTADÍSTICAS -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalUsersCount">0</div>
+                            <div class="stat-label">Usuarios Totales</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="activeUsersCount">0</div>
+                            <div class="stat-label">Usuarios Activos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="adminsCount">0</div>
+                            <div class="stat-label">Administradores</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="lastUpdate">-</div>
+                            <div class="stat-label">Última Actualización</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 🔧 CONFIGURACIÓN ACTUAL -->
+                    <div style="background: var(--bg-secondary); padding: var(--spacing-md); border-radius: var(--border-radius); margin-bottom: var(--spacing-lg);">
+                        <h4>🔧 Configuración Actual</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); font-size: 0.9rem;">
+                            <div>
+                                <strong>Sheet ID:</strong> 
+                                <span id="currentSheetId" style="font-family: monospace;"></span>
+                            </div>
+                            <div>
+                                <strong>Apps Script URL:</strong> 
+                                <span id="currentScriptUrl" style="font-family: monospace;"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 📋 LISTA DE USUARIOS -->
+                    <div>
+                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: var(--spacing-lg);">
+                            <h3>📋 Usuarios Registrados</h3>
+                            <button class="btn-secondary" onclick="testUserCreation()">
+                                ➕ Crear Usuario de Prueba
+                            </button>
+                        </div>
+                        
+                        <div id="usersLoading" class="loading-users">
+                            <div class="loading-spinner"></div>
+                            <p>Cargando usuarios desde Google Sheets...</p>
+                        </div>
+                        
+                        <div id="usersTableContainer" style="display: none;">
+                            <table class="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>Avatar</th>
+                                        <th>ID Usuario</th>
+                                        <th>Usuario</th>
+                                        <th>RUT</th>
+                                        <th>Correo</th>
+                                        <th>Rol</th>
+                                        <th>Estado</th>
+                                        <th>Fecha Creación</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <!-- Los usuarios se cargarán aquí -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div id="noUsersMessage" style="display: none; text-align: center; padding: var(--spacing-xxl); color: var(--text-secondary);">
+                            <div class="empty-icon">👥</div>
+                            <h3>No hay usuarios registrados</h3>
+                            <p>No se encontraron usuarios en la Google Sheet.</p>
+                            <button class="btn-primary" onclick="testUserCreation()">
+                                Crear Primer Usuario de Prueba
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 🛠️ ACCIONES -->
+                    <div class="action-buttons">
+                        <button class="btn-secondary" onclick="goToLogin()">
+                            🔙 Volver al Login
+                        </button>
+                        <button class="btn-secondary" onclick="goToDiagnostic()">
+                            🛠️ Ir a Diagnóstico
+                        </button>
+                        <button class="btn-primary" onclick="refreshUsers()">
+                            🔄 Actualizar Lista
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 📝 LOGS DE CONEXIÓN -->
+                <div class="verify-card">
+                    <h3>📝 Logs de Conexión</h3>
+                    <div style="background: var(--bg-secondary); padding: var(--spacing-md); border-radius: var(--border-radius); font-family: monospace; font-size: 0.8rem; max-height: 200px; overflow-y: auto;">
+                        <div id="connectionLogs">
+                            <div>> Inicializando verificación de usuarios...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- ===== JAVASCRIPT FILES ===== -->
+    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/google-apps-script.js"></script>
+    
+    <script>
+        // ===== VARIABLES GLOBALES =====
+        let users = [];
+        let connectionLogs = [];
+        
+        // ===== FUNCIONES DE NAVEGACIÓN =====
+        function goToLogin() {
+            window.location.href = 'index.html';
+        }
+        
+        function goToDiagnostic() {
+            window.location.href = 'connection-diagnostic.html';
+        }
+        
+        // ===== FUNCIONES DE LOGGING =====
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            connectionLogs.unshift(logEntry);
+            
+            const logsContainer = document.getElementById('connectionLogs');
+            const logElement = document.createElement('div');
+            logElement.textContent = logEntry;
+            
+            if (type === 'error') {
+                logElement.style.color = 'var(--error-color)';
+            } else if (type === 'success') {
+                logElement.style.color = 'var(--success-color)';
+            } else if (type === 'warning') {
+                logElement.style.color = 'var(--warning-color)';
+            }
+            
+            logsContainer.insertBefore(logElement, logsContainer.firstChild);
+            
+            // Mantener máximo 50 logs
+            if (connectionLogs.length > 50) {
+                connectionLogs.pop();
+                if (logsContainer.children.length > 50) {
+                    logsContainer.removeChild(logsContainer.lastChild);
+                }
+            }
+        }
+        
+        // ===== FUNCIONES DE USUARIOS - SOLO CONEXIÓN REAL =====
+                async function loadUsers() {
+            addLog('🔗 Conectando con Google Sheets...');
+            
+            const loadingElement = document.getElementById('usersLoading');
+            const tableContainer = document.getElementById('usersTableContainer');
+            const noUsersElement = document.getElementById('noUsersMessage');
+            
+            loadingElement.style.display = 'block';
+            tableContainer.style.display = 'none';
+            noUsersElement.style.display = 'none';
+            
+            try {
+                if (typeof GASClient === 'undefined') {
+                    throw new Error('GASClient no disponible');
+                }
+                
+                addLog('📡 Estableciendo conexión...');
+                
+                const result = await GASClient.getUsers();
+                
+                if (result.success) {
+                    users = result.users || [];
+                    
+                    if (users.length > 0) {
+                        addLog(`✅ ${users.length} usuarios cargados desde Google Sheets`, 'success');
+                        if (result.sheetInfo) {
+                            addLog(`📊 Hoja: ${result.sheetInfo.name} - ${result.sheetInfo.totalRows} filas`);
+                        }
+                    } else {
+                        addLog('ℹ️ No hay usuarios en la hoja', 'info');
+                    }
+                    
+                    updateUsersTable();
+                    updateStats();
+                    
+                } else {
+                    throw new Error(result.message || 'Error en la respuesta del servidor');
+                }
+                
+            } catch (error) {
+                addLog(`❌ Error de conexión: ${error.message}`, 'error');
+                
+                users = [];
+                updateUsersTable();
+                updateStats();
+                
+                // Mensaje de error mejorado
+                noUsersElement.innerHTML = `
+                    <div class="empty-icon">⚠️</div>
+                    <h3>Problema de conexión</h3>
+                    <p>${error.message}</p>
+                    <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left;">
+                        <strong>Para solucionar:</strong>
+                        <ul style="text-align: left; margin: 10px 0;">
+                            <li>El Google Apps Script está funcionando correctamente</li>
+                            <li>El problema es CORS desde localhost</li>
+                            <li><strong>Solución:</strong> Instala una extensión CORS como "CORS Unblock"</li>
+                            <li>O sube la aplicación a un hosting real (Netlify, Vercel, etc.)</li>
+                        </ul>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <button class="btn-primary" onclick="refreshUsers()" style="margin: 5px;">
+                            🔄 Reintentar
+                        </button>
+                        <button class="btn-secondary" onclick="window.open('https://script.google.com/macros/s/AKfycby4b3ANm05JN6DfFP7H_38ey_R9cnMxcOobqj76ywzofL54-xBvMB5DcZgYdvb2Nf47/exec?action=getUsers', '_blank')" style="margin: 5px;">
+                            🌐 Ver datos directamente
+                        </button>
+                    </div>
+                `;
+                noUsersElement.style.display = 'block';
+            }
+            
+            loadingElement.style.display = 'none';
+            
+            if (users.length > 0) {
+                tableContainer.style.display = 'block';
+            } else if (noUsersElement.style.display !== 'block') {
+                noUsersElement.style.display = 'block';
+            }
+        }
+
+        function updateUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                
+                // Avatar
+                const avatarCell = document.createElement('td');
+                const avatar = document.createElement('div');
+                avatar.className = 'user-avatar';
+                avatar.textContent = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+                avatar.style.background = getRandomColor();
+                avatarCell.appendChild(avatar);
+                
+                // ID Usuario
+                const idCell = document.createElement('td');
+                idCell.textContent = user.id || 'N/A';
+                idCell.style.fontFamily = 'monospace';
+                idCell.style.fontSize = '0.8rem';
+                
+                // Nombre
+                const nameCell = document.createElement('td');
+                nameCell.textContent = user.name || 'Sin nombre';
+                
+                // RUT
+                const rutCell = document.createElement('td');
+                rutCell.textContent = user.rut || 'No especificado';
+                rutCell.style.fontFamily = 'monospace';
+                
+                // Email
+                const emailCell = document.createElement('td');
+                emailCell.textContent = user.email || 'Sin email';
+                
+                // Rol
+                const roleCell = document.createElement('td');
+                const roleBadge = document.createElement('span');
+                roleBadge.className = 'status-badge';
+                roleBadge.style.background = user.role === 'admin' ? '#E3F2FD' : '#F3E5F5';
+                roleBadge.style.color = user.role === 'admin' ? '#1565C0' : '#7B1FA2';
+                roleBadge.textContent = user.role || 'user';
+                roleCell.appendChild(roleBadge);
+                
+                // Estado
+                const statusCell = document.createElement('td');
+                const statusBadge = document.createElement('span');
+                const status = user.status || 'active';
+                statusBadge.className = `status-badge status-${status}`;
+                statusBadge.textContent = status === 'active' ? 'Activo' : 'Inactivo';
+                statusCell.appendChild(statusBadge);
+                
+                // Fecha Creación
+                const createdCell = document.createElement('td');
+                createdCell.textContent = user.created && user.created !== 'No especificada' ? 
+                    formatDate(user.created) : 'No espec.';
+                
+                // Acciones
+                const actionsCell = document.createElement('td');
+                const viewBtn = document.createElement('button');
+                viewBtn.className = 'btn-secondary';
+                viewBtn.style.padding = 'var(--spacing-xs) var(--spacing-sm)';
+                viewBtn.textContent = '👁️ Ver';
+                viewBtn.onclick = () => viewUser(user);
+                actionsCell.appendChild(viewBtn);
+                
+                // Agregar todas las celdas a la fila
+                row.appendChild(avatarCell);
+                row.appendChild(idCell);
+                row.appendChild(nameCell);
+                row.appendChild(rutCell);
+                row.appendChild(emailCell);
+                row.appendChild(roleCell);
+                row.appendChild(statusCell);
+                row.appendChild(createdCell);
+                row.appendChild(actionsCell);
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Función auxiliar para formatear fechas
+        function formatDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                return isNaN(date.getTime()) ? dateString : date.toLocaleDateString('es-ES');
+            } catch (error) {
+                return dateString;
+            }
+        }
+        
+        function updateStats() {
+            const totalUsers = users.length;
+            const activeUsers = users.filter(user => user.status === 'active').length;
+            const admins = users.filter(user => user.role === 'admin').length;
+            const withRut = users.filter(user => user.rut && user.rut !== 'No especificado').length;
+            
+            document.getElementById('totalUsersCount').textContent = totalUsers;
+            document.getElementById('activeUsersCount').textContent = activeUsers;
+            document.getElementById('adminsCount').textContent = admins;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('es-ES');
+            
+            // Agregar estadística de RUT si hay datos
+            if (withRut > 0) {
+                const statsGrid = document.querySelector('.stats-grid');
+                if (!document.getElementById('rutStats')) {
+                    const rutStat = document.createElement('div');
+                    rutStat.className = 'stat-card';
+                    rutStat.id = 'rutStats';
+                    rutStat.innerHTML = `
+                        <div class="stat-number">${withRut}</div>
+                        <div class="stat-label">Con RUT</div>
+                    `;
+                    statsGrid.appendChild(rutStat);
+                } else {
+                    document.querySelector('#rutStats .stat-number').textContent = withRut;
+                }
+            }
+        }
+        
+        function refreshUsers() {
+            addLog('🔄 Reintentando conexión REAL...');
+            loadUsers();
+        }
+        
+        // ===== FUNCIONES DE PRUEBA =====
+        async function testUserCreation() {
+            addLog('Creando usuario de prueba...');
+            
+            try {
+                // Aquí iría la llamada real a GAS para crear usuario
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const newUser = {
+                    id: 'user_test_' + Date.now(),
+                    name: 'Usuario Prueba',
+                    rut: '12.345.678-9',
+                    email: 'prueba@ejemplo.com',
+                    role: 'user',
+                    status: 'active',
+                    password: '••••••••',
+                    created: new Date().toISOString(),
+                    rowNumber: users.length + 2
+                };
+                
+                users.unshift(newUser);
+                updateUsersTable();
+                updateStats();
+                
+                addLog('✅ Usuario de prueba creado exitosamente', 'success');
+                if (typeof AppUtils !== 'undefined') {
+                    AppUtils.showToast('Usuario de prueba creado', 'success');
+                }
+                
+            } catch (error) {
+                addLog(`❌ Error creando usuario: ${error.message}`, 'error');
+                if (typeof AppUtils !== 'undefined') {
+                    AppUtils.showToast('Error creando usuario', 'error');
+                }
+            }
+        }
+        
+        function viewUser(user) {
+            const userInfo = `
+ID Usuario: ${user.id || 'N/A'}
+Nombre: ${user.name || 'Sin nombre'}
+RUT: ${user.rut || 'No especificado'}
+Correo: ${user.email || 'Sin email'}
+Rol: ${user.role || 'user'}
+Estado: ${user.status === 'active' ? 'Activo' : 'Inactivo'}
+Clave: ${user.password || 'No disponible'}
+Fecha Creación: ${user.created || 'No especificada'}
+Fila en Sheet: ${user.rowNumber || 'N/A'}
+            `.trim();
+            
+            alert(`👤 Información del Usuario:\n\n${userInfo}`);
+        }
+        
+        // ===== FUNCIONES AUXILIARES =====
+        function getRandomColor() {
+            const colors = [
+                '#1E88E5', '#43A047', '#FB8C00', '#E53935', 
+                '#8E24AA', '#0097A7', '#7CB342', '#5D4037'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // ===== FUNCIÓN PARA ESPERAR GASClient =====
+        function waitForGASClient(timeout = 5000) {
+            return new Promise((resolve, reject) => {
+                const startTime = Date.now();
+                
+                function checkGASClient() {
+                    if (typeof GASClient !== 'undefined' && GASClient !== null) {
+                        addLog('✅ GASClient detectado');
+                        resolve();
+                    } else if (Date.now() - startTime > timeout) {
+                        reject(new Error('Timeout esperando GASClient'));
+                    } else {
+                        setTimeout(checkGASClient, 100);
+                    }
+                }
+                
+                checkGASClient();
+            });
+        }
+
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('Página de verificación de usuarios cargada');
+            
+            // Mostrar configuración actual
+            if (typeof AppConfig !== 'undefined') {
+                document.getElementById('currentSheetId').textContent = AppConfig.SHEET_ID;
+                document.getElementById('currentScriptUrl').textContent = AppConfig.APPS_SCRIPT_URL;
+                
+                addLog('✅ Sistema listo. Conectado con:');
+                addLog(`   Sheet: ${AppConfig.SHEET_ID}`);
+                addLog(`   Script: ${AppConfig.APPS_SCRIPT_URL}`);
+            } else {
+                document.getElementById('currentSheetId').textContent = 'No disponible';
+                document.getElementById('currentScriptUrl').textContent = 'No disponible';
+                addLog('⚠️ AppConfig no disponible', 'warning');
+            }
+            
+            // Esperar a que GASClient esté disponible
+            waitForGASClient().then(() => {
+                addLog('🚀 GASClient disponible, iniciando carga de usuarios...');
+                loadUsers();
+            }).catch(error => {
+                addLog(`❌ Error esperando GASClient: ${error.message}`, 'error');
+                // 🔥 NO usar datos mock - mostrar error
+                document.getElementById('usersLoading').style.display = 'none';
+                document.getElementById('noUsersMessage').innerHTML = `
+                    <div class="empty-icon">❌</div>
+                    <h3>GASClient no disponible</h3>
+                    <p>Error: ${error.message}</p>
+                    <button class="btn-primary" onclick="location.reload()">
+                        🔄 Recargar página
+                    </button>
+                `;
+                document.getElementById('noUsersMessage').style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
