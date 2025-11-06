@@ -7,7 +7,7 @@
  * @description Contiene todas las constantes, URLs y configuraciones del sistema
  * @type {Object}
  */
-const AppConfig = {
+window.AppConfig = {
     // ==========================================================================
     // CONFIGURACIÓN GOOGLE SERVICES - INTEGRACIÓN CON BACKEND
     // ==========================================================================
@@ -34,7 +34,7 @@ const AppConfig = {
      * Nombre de la aplicación para mostrar en UI y metadata
      * @type {string}
      */
-    APP_NAME: 'App Modular PWA',
+    APP_NAME: 'Sistema de Gestión JM',
     
     /**
      * Versión semántica de la aplicación para control de cambios
@@ -80,7 +80,13 @@ const AppConfig = {
         LOGOUT: 'logoutUser',
         
         /** Obtención de datos del perfil de usuario */
-        GET_USER_DATA: 'getUserData'
+        GET_USER_DATA: 'getUserData',
+        
+        /** Obtención de lista de usuarios */
+        GET_USERS: 'getUsers',
+        
+        /** Prueba de conexión con el servidor */
+        TEST_CONNECTION: 'testConnection'
     },
 
     // ==========================================================================
@@ -124,6 +130,29 @@ const AppConfig = {
         
         /** Estado de error - Algo salió mal */
         ERROR: 'error'
+    },
+    
+    // ==========================================================================
+    // CONFIGURACIÓN DE LA UI - VALORES VISUALES
+    // ==========================================================================
+    
+    /**
+     * Configuración relacionada con la interfaz de usuario
+     * @type {Object}
+     */
+    UI: {
+        /** Tiempo de duración de las notificaciones toast */
+        TOAST_DURATION: 4000,
+        
+        /** Tiempo de animaciones en milisegundos */
+        ANIMATION_DURATION: 300,
+        
+        /** Breakpoints para diseño responsive */
+        BREAKPOINTS: {
+            MOBILE: 768,
+            TABLET: 1024,
+            DESKTOP: 1200
+        }
     }
 };
 
@@ -136,7 +165,7 @@ const AppConfig = {
  * @description Valores que no cambian durante la ejecución y son utilizados en múltiples módulos
  * @type {Object}
  */
-const Constants = {
+window.Constants = {
     
     // ==========================================================================
     // CLAVES DE ALMACENAMIENTO LOCAL - LOCALSTORAGE KEYS
@@ -155,7 +184,10 @@ const Constants = {
         REMEMBER_ME: 'remember_me',
         
         /** Configuraciones de preferencias de la aplicación */
-        APP_SETTINGS: 'app_settings'
+        APP_SETTINGS: 'app_settings',
+        
+        /** Tema de la aplicación (claro/oscuro) */
+        THEME: 'app_theme'
     },
 
     // ==========================================================================
@@ -178,15 +210,63 @@ const Constants = {
         SESSION_EXPIRED: 'sessionExpired',
         
         /** Disparado cuando ocurre un error de autenticación */
-        AUTH_ERROR: 'authError'
+        AUTH_ERROR: 'authError',
+        
+        /** Disparado cuando la aplicación está lista */
+        APP_READY: 'appReady',
+        
+        /** Disparado cuando cambia el tema */
+        THEME_CHANGED: 'themeChanged'
+    },
+    
+    // ==========================================================================
+    // MENSAJES DE LA APLICACIÓN - TEXTO PARA UI
+    // ==========================================================================
+    
+    /**
+     * Mensajes estándar para la interfaz de usuario
+     * @description Centraliza todos los textos para facilitar internacionalización
+     * @type {Object}
+     */
+    MESSAGES: {
+        LOGIN: {
+            SUCCESS: '¡Bienvenido!',
+            ERROR: 'Error en el inicio de sesión',
+            INVALID_CREDENTIALS: 'Email o contraseña incorrectos',
+            SESSION_EXPIRED: 'Tu sesión ha expirado'
+        },
+        ERROR: {
+            CONNECTION: 'Error de conexión con el servidor',
+            UNEXPECTED: 'Error inesperado en la aplicación',
+            PERMISSION: 'No tienes permisos para esta acción'
+        },
+        SUCCESS: {
+            OPERATION_COMPLETED: 'Operación completada correctamente',
+            SETTINGS_SAVED: 'Configuración guardada'
+        }
     }
 };
 
 // ==========================================================================
-// EXPORTACIÓN PARA MÓDULOS (SI SE USA ES6 MODULES)
+// COMPATIBILIDAD CON CÓDIGO EXISTENTE
 // ==========================================================================
 
-// Nota: Para usar en entornos con módulos ES6, descomentar:
-// export { AppConfig, Constants };
+// Para compatibilidad con código que espera estas variables globales
+if (typeof GAS_URL === 'undefined') {
+    window.GAS_URL = AppConfig.APPS_SCRIPT_URL;
+}
 
+if (typeof SHEET_ID === 'undefined') {
+    window.SHEET_ID = AppConfig.SHEET_ID;
+}
 
+// ==========================================================================
+// VERIFICACIÓN DE CONFIGURACIÓN EN CONSOLA
+// ==========================================================================
+
+console.log('✅ Config.js cargado - AppConfig:', {
+    app: AppConfig.APP_NAME,
+    version: AppConfig.VERSION,
+    endpoints: Object.keys(AppConfig.ENDPOINTS),
+    roles: Object.keys(AppConfig.ROLES)
+});

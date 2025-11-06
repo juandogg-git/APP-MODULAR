@@ -3,107 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificar Usuarios - App Modular</title>
+    <title>Verificar Usuarios - Sistema JM</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
         .verify-container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: var(--spacing-xl);
+            padding: 20px;
         }
         
         .verify-card {
-            background: var(--bg-primary);
-            border-radius: var(--border-radius-lg);
-            padding: var(--spacing-xl);
-            box-shadow: var(--shadow-lg);
-            margin-bottom: var(--spacing-lg);
+            background: var(--bg-white, #ffffff);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color, #e0e0e0);
         }
         
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-xl);
+            gap: 16px;
+            margin-bottom: 24px;
         }
         
         .stat-card {
-            background: var(--bg-secondary);
-            padding: var(--spacing-lg);
-            border-radius: var(--border-radius);
+            background: var(--bg-light, #f8f9fa);
+            padding: 20px;
+            border-radius: 8px;
             text-align: center;
-            border-left: 4px solid var(--primary-color);
+            border-left: 4px solid var(--primary-color, #1E88E5);
         }
         
         .stat-number {
             font-size: 2rem;
             font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: var(--spacing-xs);
+            color: var(--primary-color, #1E88E5);
+            margin-bottom: 8px;
         }
         
         .stat-label {
-            color: var(--text-secondary);
+            color: var(--text-secondary, #666666);
             font-size: 0.9rem;
         }
         
         .users-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: var(--spacing-lg);
+            margin-top: 20px;
+            background: var(--bg-white, #ffffff);
         }
         
         .users-table th,
         .users-table td {
-            padding: var(--spacing-md);
+            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
         }
         
         .users-table th {
-            background: var(--bg-secondary);
+            background: var(--bg-secondary, #f5f5f5);
             font-weight: 600;
-            color: var(--text-primary);
+            color: var(--text-primary, #333333);
+            position: sticky;
+            top: 0;
         }
         
         .users-table tr:hover {
-            background: var(--bg-secondary);
+            background: var(--bg-light, #f8f9fa);
         }
         
         .status-badge {
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: var(--border-radius);
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 0.8rem;
             font-weight: 500;
+            display: inline-block;
         }
         
         .status-active {
             background: #E8F5E8;
-            color: var(--success-color);
+            color: #4CAF50;
         }
         
         .status-inactive {
             background: #FFEBEE;
-            color: var(--error-color);
+            color: #F44336;
         }
         
         .action-buttons {
             display: flex;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-xl);
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
         }
         
         .loading-users {
             text-align: center;
-            padding: var(--spacing-xxl);
-            color: var(--text-secondary);
+            padding: 40px;
+            color: var(--text-secondary, #666666);
         }
         
         .user-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: var(--primary-color);
+            background: var(--primary-color, #1E88E5);
             color: white;
             display: flex;
             align-items: center;
@@ -114,7 +120,7 @@
 
         .loading-spinner {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color);
+            border-top: 4px solid var(--primary-color, #1E88E5);
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -126,6 +132,139 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .connection-logs {
+            background: var(--bg-secondary, #f5f5f5);
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color, #e0e0e0);
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .log-error { color: #F44336; }
+        .log-success { color: #4CAF50; }
+        .log-warning { color: #FF9800; }
+        .log-info { color: #2196F3; }
+
+        .config-info {
+            background: var(--bg-light, #f8f9fa);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color, #1E88E5);
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-label {
+            font-weight: 600;
+            color: var(--text-secondary, #666666);
+            margin-bottom: 4px;
+        }
+
+        .config-value {
+            font-family: 'Courier New', monospace;
+            background: var(--bg-white, #ffffff);
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color, #e0e0e0);
+            word-break: break-all;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary, #666666);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color, #1E88E5);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark, #1565C0);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-color, #1E88E5);
+            border: 2px solid var(--primary-color, #1E88E5);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color, #1E88E5);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .verify-container {
+                padding: 10px;
+            }
+            
+            .verify-card {
+                padding: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .users-table {
+                font-size: 0.8rem;
+            }
+            
+            .users-table th,
+            .users-table td {
+                padding: 8px 4px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -133,7 +272,7 @@
         <header class="app-header">
             <div class="header-content">
                 <div class="logo-section">
-                    <div class="logo" style="background: #1E88E5; color: white; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">AM</div>
+                    <div class="logo" style="background: #1E88E5; color: white; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">JM</div>
                     <h1 class="app-title">Verificar Usuarios</h1>
                 </div>
                 <div class="header-actions">
@@ -149,11 +288,27 @@
 
         <main class="main-content">
             <div class="verify-container">
+                <!-- TARJETA PRINCIPAL -->
                 <div class="verify-card">
                     <h2>👥 Verificación de Usuarios en Google Sheets</h2>
                     <p>Esta página muestra los usuarios registrados en tu Google Sheet y verifica la conexión con Apps Script.</p>
                     
-                    <!-- 📊 ESTADÍSTICAS -->
+                    <!-- CONFIGURACIÓN ACTUAL -->
+                    <div class="config-info">
+                        <h4>🔧 Configuración Actual</h4>
+                        <div class="config-grid">
+                            <div class="config-item">
+                                <span class="config-label">Sheet ID:</span>
+                                <code class="config-value" id="currentSheetId">Cargando...</code>
+                            </div>
+                            <div class="config-item">
+                                <span class="config-label">Apps Script URL:</span>
+                                <code class="config-value" id="currentScriptUrl">Cargando...</code>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ESTADÍSTICAS -->
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-number" id="totalUsersCount">0</div>
@@ -173,73 +328,77 @@
                         </div>
                     </div>
                     
-                    <!-- 🔧 CONFIGURACIÓN ACTUAL -->
-                    <div style="background: var(--bg-secondary); padding: var(--spacing-md); border-radius: var(--border-radius); margin-bottom: var(--spacing-lg);">
-                        <h4>🔧 Configuración Actual</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); font-size: 0.9rem;">
-                            <div>
-                                <strong>Sheet ID:</strong> 
-                                <span id="currentSheetId" style="font-family: monospace;"></span>
-                            </div>
-                            <div>
-                                <strong>Apps Script URL:</strong> 
-                                <span id="currentScriptUrl" style="font-family: monospace;"></span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 📋 LISTA DE USUARIOS -->
+                    <!-- LISTA DE USUARIOS -->
                     <div>
-                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: var(--spacing-lg);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
                             <h3>📋 Usuarios Registrados</h3>
-                            <button class="btn-secondary" onclick="testUserCreation()">
-                                ➕ Crear Usuario de Prueba
+                            <button class="btn-secondary" onclick="runConnectionTest()">
+                                🧪 Probar Conexión
                             </button>
                         </div>
                         
+                        <!-- ESTADO DE CARGA -->
                         <div id="usersLoading" class="loading-users">
                             <div class="loading-spinner"></div>
                             <p>Cargando usuarios desde Google Sheets...</p>
                         </div>
                         
+                        <!-- TABLA DE USUARIOS -->
                         <div id="usersTableContainer" style="display: none;">
-                            <table class="users-table">
-                                <thead>
-                                    <tr>
-                                        <th>Avatar</th>
-                                        <th>ID Usuario</th>
-                                        <th>Usuario</th>
-                                        <th>RUT</th>
-                                        <th>Correo</th>
-                                        <th>Rol</th>
-                                        <th>Estado</th>
-                                        <th>Fecha Creación</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="usersTableBody">
-                                    <!-- Los usuarios se cargarán aquí -->
-                                </tbody>
-                            </table>
+                            <div style="overflow-x: auto;">
+                                <table class="users-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Avatar</th>
+                                            <th>ID Usuario</th>
+                                            <th>Usuario</th>
+                                            <th>RUT</th>
+                                            <th>Correo</th>
+                                            <th>Rol</th>
+                                            <th>Estado</th>
+                                            <th>Fecha Creación</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                        <!-- Los usuarios se cargarán aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         
-                        <div id="noUsersMessage" style="display: none; text-align: center; padding: var(--spacing-xxl); color: var(--text-secondary);">
+                        <!-- SIN USUARIOS -->
+                        <div id="noUsersMessage" style="display: none;" class="empty-state">
                             <div class="empty-icon">👥</div>
                             <h3>No hay usuarios registrados</h3>
-                            <p>No se encontraron usuarios en la Google Sheet.</p>
-                            <button class="btn-primary" onclick="testUserCreation()">
-                                Crear Primer Usuario de Prueba
+                            <p>No se encontraron usuarios en la Google Sheet "Usuarios".</p>
+                            <button class="btn-primary" onclick="refreshUsers()">
+                                🔄 Reintentar Carga
                             </button>
+                        </div>
+
+                        <!-- ERROR DE CONEXIÓN -->
+                        <div id="connectionError" style="display: none;" class="empty-state">
+                            <div class="empty-icon">❌</div>
+                            <h3>Error de Conexión</h3>
+                            <p id="errorMessage">No se pudo conectar con Google Apps Script</p>
+                            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px;">
+                                <button class="btn-primary" onclick="refreshUsers()">
+                                    🔄 Reintentar
+                                </button>
+                                <button class="btn-secondary" onclick="goToLogin()">
+                                    🔙 Volver al Login
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- 🛠️ ACCIONES -->
+                    <!-- ACCIONES -->
                     <div class="action-buttons">
                         <button class="btn-secondary" onclick="goToLogin()">
                             🔙 Volver al Login
                         </button>
-                        <button class="btn-secondary" onclick="goToDiagnostic()">
-                            🛠️ Ir a Diagnóstico
+                        <button class="btn-secondary" onclick="viewRawData()">
+                            📊 Ver Datos Crudos
                         </button>
                         <button class="btn-primary" onclick="refreshUsers()">
                             🔄 Actualizar Lista
@@ -247,101 +406,106 @@
                     </div>
                 </div>
                 
-                <!-- 📝 LOGS DE CONEXIÓN -->
+                <!-- LOGS DE CONEXIÓN -->
                 <div class="verify-card">
-                    <h3>📝 Logs de Conexión</h3>
-                    <div style="background: var(--bg-secondary); padding: var(--spacing-md); border-radius: var(--border-radius); font-family: monospace; font-size: 0.8rem; max-height: 200px; overflow-y: auto;">
-                        <div id="connectionLogs">
-                            <div>> Inicializando verificación de usuarios...</div>
-                        </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3>📝 Logs de Conexión</h3>
+                        <button class="btn-secondary" onclick="clearLogs()" style="padding: 6px 12px; font-size: 0.8rem;">
+                            🗑️ Limpiar
+                        </button>
+                    </div>
+                    <div class="connection-logs" id="connectionLogs">
+                        <div class="log-entry">> Sistema de verificación inicializado...</div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
+
     <!-- ===== JAVASCRIPT FILES ===== -->
-    <script src="js/utils.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/google-apps-script.js"></script>
     
     <script>
         // ===== VARIABLES GLOBALES =====
         let users = [];
         let connectionLogs = [];
-        
+
         // ===== FUNCIONES DE NAVEGACIÓN =====
         function goToLogin() {
             window.location.href = 'index.html';
         }
-        
-        function goToDiagnostic() {
-            window.location.href = 'connection-diagnostic.html';
+
+        function viewRawData() {
+            if (typeof AppConfig !== 'undefined') {
+                const url = `${AppConfig.APPS_SCRIPT_URL}?action=getUsers&sheetId=${AppConfig.SHEET_ID}&diagnostic=true`;
+                window.open(url, '_blank');
+            } else {
+                alert('Configuración no disponible');
+            }
         }
-        
-        // ===== FUNCIONES DE LOGGING =====
+
+        // ===== FUNCIONES DE LOGGING MEJORADAS =====
         function addLog(message, type = 'info') {
             const timestamp = new Date().toLocaleTimeString();
-            const logEntry = `[${timestamp}] ${message}`;
-            connectionLogs.unshift(logEntry);
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
             
             const logsContainer = document.getElementById('connectionLogs');
-            const logElement = document.createElement('div');
-            logElement.textContent = logEntry;
+            logsContainer.appendChild(logEntry);
             
-            if (type === 'error') {
-                logElement.style.color = 'var(--error-color)';
-            } else if (type === 'success') {
-                logElement.style.color = 'var(--success-color)';
-            } else if (type === 'warning') {
-                logElement.style.color = 'var(--warning-color)';
-            }
+            // Auto-scroll to bottom
+            logsContainer.scrollTop = logsContainer.scrollHeight;
             
-            logsContainer.insertBefore(logElement, logsContainer.firstChild);
-            
-            // Mantener máximo 50 logs
-            if (connectionLogs.length > 50) {
-                connectionLogs.pop();
-                if (logsContainer.children.length > 50) {
-                    logsContainer.removeChild(logsContainer.lastChild);
-                }
+            // Mantener máximo 100 logs
+            if (logsContainer.children.length > 100) {
+                logsContainer.removeChild(logsContainer.firstChild);
             }
         }
-        
-        // ===== FUNCIONES DE USUARIOS - SOLO CONEXIÓN REAL =====
-                async function loadUsers() {
-            addLog('🔗 Conectando con Google Sheets...');
+
+        function clearLogs() {
+            const logsContainer = document.getElementById('connectionLogs');
+            logsContainer.innerHTML = '<div class="log-entry">> Logs limpiados...</div>';
+        }
+
+        // ===== FUNCIONES PRINCIPALES =====
+        async function loadUsers() {
+            addLog('🔗 Iniciando conexión con Google Sheets...');
             
-            const loadingElement = document.getElementById('usersLoading');
-            const tableContainer = document.getElementById('usersTableContainer');
-            const noUsersElement = document.getElementById('noUsersMessage');
-            
-            loadingElement.style.display = 'block';
-            tableContainer.style.display = 'none';
-            noUsersElement.style.display = 'none';
+            // Mostrar estado de carga
+            showElement('usersLoading');
+            hideElement('usersTableContainer');
+            hideElement('noUsersMessage');
+            hideElement('connectionError');
             
             try {
+                // Verificar que GASClient esté disponible
                 if (typeof GASClient === 'undefined') {
-                    throw new Error('GASClient no disponible');
+                    throw new Error('Cliente de Google Apps Script no disponible');
                 }
                 
-                addLog('📡 Estableciendo conexión...');
+                addLog('📡 Conectando con el servidor...');
                 
+                // Realizar la petición REAL
                 const result = await GASClient.getUsers();
                 
                 if (result.success) {
                     users = result.users || [];
                     
                     if (users.length > 0) {
-                        addLog(`✅ ${users.length} usuarios cargados desde Google Sheets`, 'success');
-                        if (result.sheetInfo) {
-                            addLog(`📊 Hoja: ${result.sheetInfo.name} - ${result.sheetInfo.totalRows} filas`);
+                        addLog(`✅ ${users.length} usuarios cargados correctamente`, 'success');
+                        if (result.stats) {
+                            addLog(`📊 Estadísticas: ${result.stats.total} total, ${result.stats.active} activos, ${result.stats.admins} administradores`);
                         }
+                        updateUsersTable();
+                        updateStats();
+                        showElement('usersTableContainer');
                     } else {
-                        addLog('ℹ️ No hay usuarios en la hoja', 'info');
+                        addLog('ℹ️ La hoja "Usuarios" está vacía o solo contiene encabezados', 'warning');
+                        showElement('noUsersMessage');
                     }
-                    
-                    updateUsersTable();
-                    updateStats();
                     
                 } else {
                     throw new Error(result.message || 'Error en la respuesta del servidor');
@@ -349,43 +513,9 @@
                 
             } catch (error) {
                 addLog(`❌ Error de conexión: ${error.message}`, 'error');
-                
-                users = [];
-                updateUsersTable();
-                updateStats();
-                
-                // Mensaje de error mejorado
-                noUsersElement.innerHTML = `
-                    <div class="empty-icon">⚠️</div>
-                    <h3>Problema de conexión</h3>
-                    <p>${error.message}</p>
-                    <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left;">
-                        <strong>Para solucionar:</strong>
-                        <ul style="text-align: left; margin: 10px 0;">
-                            <li>El Google Apps Script está funcionando correctamente</li>
-                            <li>El problema es CORS desde localhost</li>
-                            <li><strong>Solución:</strong> Instala una extensión CORS como "CORS Unblock"</li>
-                            <li>O sube la aplicación a un hosting real (Netlify, Vercel, etc.)</li>
-                        </ul>
-                    </div>
-                    <div style="margin: 15px 0;">
-                        <button class="btn-primary" onclick="refreshUsers()" style="margin: 5px;">
-                            🔄 Reintentar
-                        </button>
-                        <button class="btn-secondary" onclick="window.open('https://script.google.com/macros/s/AKfycby4b3ANm05JN6DfFP7H_38ey_R9cnMxcOobqj76ywzofL54-xBvMB5DcZgYdvb2Nf47/exec?action=getUsers', '_blank')" style="margin: 5px;">
-                            🌐 Ver datos directamente
-                        </button>
-                    </div>
-                `;
-                noUsersElement.style.display = 'block';
-            }
-            
-            loadingElement.style.display = 'none';
-            
-            if (users.length > 0) {
-                tableContainer.style.display = 'block';
-            } else if (noUsersElement.style.display !== 'block') {
-                noUsersElement.style.display = 'block';
+                showConnectionError(error.message);
+            } finally {
+                hideElement('usersLoading');
             }
         }
 
@@ -393,15 +523,15 @@
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
             
-            users.forEach(user => {
+            users.forEach((user, index) => {
                 const row = document.createElement('tr');
                 
-                // Avatar
+                // Avatar con inicial
                 const avatarCell = document.createElement('td');
                 const avatar = document.createElement('div');
                 avatar.className = 'user-avatar';
                 avatar.textContent = user.name ? user.name.charAt(0).toUpperCase() : 'U';
-                avatar.style.background = getRandomColor();
+                avatar.style.background = getColorFromIndex(index);
                 avatarCell.appendChild(avatar);
                 
                 // ID Usuario
@@ -413,6 +543,7 @@
                 // Nombre
                 const nameCell = document.createElement('td');
                 nameCell.textContent = user.name || 'Sin nombre';
+                nameCell.style.fontWeight = '500';
                 
                 // RUT
                 const rutCell = document.createElement('td');
@@ -427,34 +558,27 @@
                 const roleCell = document.createElement('td');
                 const roleBadge = document.createElement('span');
                 roleBadge.className = 'status-badge';
-                roleBadge.style.background = user.role === 'admin' ? '#E3F2FD' : '#F3E5F5';
-                roleBadge.style.color = user.role === 'admin' ? '#1565C0' : '#7B1FA2';
+                if (user.role === 'admin') {
+                    roleBadge.style.background = '#E3F2FD';
+                    roleBadge.style.color = '#1565C0';
+                } else {
+                    roleBadge.style.background = '#F3E5F5';
+                    roleBadge.style.color = '#7B1FA2';
+                }
                 roleBadge.textContent = user.role || 'user';
                 roleCell.appendChild(roleBadge);
                 
                 // Estado
                 const statusCell = document.createElement('td');
                 const statusBadge = document.createElement('span');
-                const status = user.status || 'active';
-                statusBadge.className = `status-badge status-${status}`;
-                statusBadge.textContent = status === 'active' ? 'Activo' : 'Inactivo';
+                statusBadge.className = `status-badge status-${user.status || 'active'}`;
+                statusBadge.textContent = user.status === 'active' ? 'Activo' : 'Inactivo';
                 statusCell.appendChild(statusBadge);
                 
                 // Fecha Creación
                 const createdCell = document.createElement('td');
-                createdCell.textContent = user.created && user.created !== 'No especificada' ? 
-                    formatDate(user.created) : 'No espec.';
+                createdCell.textContent = formatDate(user.created);
                 
-                // Acciones
-                const actionsCell = document.createElement('td');
-                const viewBtn = document.createElement('button');
-                viewBtn.className = 'btn-secondary';
-                viewBtn.style.padding = 'var(--spacing-xs) var(--spacing-sm)';
-                viewBtn.textContent = '👁️ Ver';
-                viewBtn.onclick = () => viewUser(user);
-                actionsCell.appendChild(viewBtn);
-                
-                // Agregar todas las celdas a la fila
                 row.appendChild(avatarCell);
                 row.appendChild(idCell);
                 row.appendChild(nameCell);
@@ -463,14 +587,80 @@
                 row.appendChild(roleCell);
                 row.appendChild(statusCell);
                 row.appendChild(createdCell);
-                row.appendChild(actionsCell);
                 
                 tbody.appendChild(row);
             });
         }
 
-        // Función auxiliar para formatear fechas
+        function updateStats() {
+            const totalUsers = users.length;
+            const activeUsers = users.filter(user => user.status === 'active').length;
+            const admins = users.filter(user => user.role === 'admin').length;
+            
+            document.getElementById('totalUsersCount').textContent = totalUsers;
+            document.getElementById('activeUsersCount').textContent = activeUsers;
+            document.getElementById('adminsCount').textContent = admins;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        }
+
+        function refreshUsers() {
+            addLog('🔄 Actualizando lista de usuarios...');
+            loadUsers();
+        }
+
+        async function runConnectionTest() {
+            addLog('🧪 Ejecutando prueba de conexión...');
+            
+            try {
+                if (typeof GASClient === 'undefined') {
+                    throw new Error('GASClient no disponible');
+                }
+                
+                const result = await GASClient.testConnection();
+                
+                if (result.success) {
+                    addLog('✅ Prueba de conexión exitosa', 'success');
+                    if (typeof AppUtils !== 'undefined') {
+                        AppUtils.showToast('Conexión verificada correctamente', 'success');
+                    }
+                } else {
+                    throw new Error(result.message || 'Error en la prueba de conexión');
+                }
+                
+            } catch (error) {
+                addLog(`❌ Error en prueba de conexión: ${error.message}`, 'error');
+                if (typeof AppUtils !== 'undefined') {
+                    AppUtils.showToast('Error en la conexión', 'error');
+                }
+            }
+        }
+
+        // ===== FUNCIONES AUXILIARES =====
+        function showElement(id) {
+            const element = document.getElementById(id);
+            if (element) element.style.display = 'block';
+        }
+
+        function hideElement(id) {
+            const element = document.getElementById(id);
+            if (element) element.style.display = 'none';
+        }
+
+        function showConnectionError(message) {
+            const errorElement = document.getElementById('connectionError');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (errorElement && errorMessage) {
+                errorMessage.textContent = message;
+                errorElement.style.display = 'block';
+            }
+        }
+
         function formatDate(dateString) {
+            if (!dateString || dateString === 'No especificada') {
+                return 'No espec.';
+            }
+            
             try {
                 const date = new Date(dateString);
                 return isNaN(date.getTime()) ? dateString : date.toLocaleDateString('es-ES');
@@ -478,159 +668,55 @@
                 return dateString;
             }
         }
-        
-        function updateStats() {
-            const totalUsers = users.length;
-            const activeUsers = users.filter(user => user.status === 'active').length;
-            const admins = users.filter(user => user.role === 'admin').length;
-            const withRut = users.filter(user => user.rut && user.rut !== 'No especificado').length;
-            
-            document.getElementById('totalUsersCount').textContent = totalUsers;
-            document.getElementById('activeUsersCount').textContent = activeUsers;
-            document.getElementById('adminsCount').textContent = admins;
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('es-ES');
-            
-            // Agregar estadística de RUT si hay datos
-            if (withRut > 0) {
-                const statsGrid = document.querySelector('.stats-grid');
-                if (!document.getElementById('rutStats')) {
-                    const rutStat = document.createElement('div');
-                    rutStat.className = 'stat-card';
-                    rutStat.id = 'rutStats';
-                    rutStat.innerHTML = `
-                        <div class="stat-number">${withRut}</div>
-                        <div class="stat-label">Con RUT</div>
-                    `;
-                    statsGrid.appendChild(rutStat);
-                } else {
-                    document.querySelector('#rutStats .stat-number').textContent = withRut;
-                }
-            }
-        }
-        
-        function refreshUsers() {
-            addLog('🔄 Reintentando conexión REAL...');
-            loadUsers();
-        }
-        
-        // ===== FUNCIONES DE PRUEBA =====
-        async function testUserCreation() {
-            addLog('Creando usuario de prueba...');
-            
-            try {
-                // Aquí iría la llamada real a GAS para crear usuario
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                const newUser = {
-                    id: 'user_test_' + Date.now(),
-                    name: 'Usuario Prueba',
-                    rut: '12.345.678-9',
-                    email: 'prueba@ejemplo.com',
-                    role: 'user',
-                    status: 'active',
-                    password: '••••••••',
-                    created: new Date().toISOString(),
-                    rowNumber: users.length + 2
-                };
-                
-                users.unshift(newUser);
-                updateUsersTable();
-                updateStats();
-                
-                addLog('✅ Usuario de prueba creado exitosamente', 'success');
-                if (typeof AppUtils !== 'undefined') {
-                    AppUtils.showToast('Usuario de prueba creado', 'success');
-                }
-                
-            } catch (error) {
-                addLog(`❌ Error creando usuario: ${error.message}`, 'error');
-                if (typeof AppUtils !== 'undefined') {
-                    AppUtils.showToast('Error creando usuario', 'error');
-                }
-            }
-        }
-        
-        function viewUser(user) {
-            const userInfo = `
-ID Usuario: ${user.id || 'N/A'}
-Nombre: ${user.name || 'Sin nombre'}
-RUT: ${user.rut || 'No especificado'}
-Correo: ${user.email || 'Sin email'}
-Rol: ${user.role || 'user'}
-Estado: ${user.status === 'active' ? 'Activo' : 'Inactivo'}
-Clave: ${user.password || 'No disponible'}
-Fecha Creación: ${user.created || 'No especificada'}
-Fila en Sheet: ${user.rowNumber || 'N/A'}
-            `.trim();
-            
-            alert(`👤 Información del Usuario:\n\n${userInfo}`);
-        }
-        
-        // ===== FUNCIONES AUXILIARES =====
-        function getRandomColor() {
+
+        function getColorFromIndex(index) {
             const colors = [
                 '#1E88E5', '#43A047', '#FB8C00', '#E53935', 
-                '#8E24AA', '#0097A7', '#7CB342', '#5D4037'
+                '#8E24AA', '#0097A7', '#7CB342', '#5D4037',
+                '#F4511E', '#546E7A', '#6D4C41', '#37474F'
             ];
-            return colors[Math.floor(Math.random() * colors.length)];
+            return colors[index % colors.length];
         }
 
-        // ===== FUNCIÓN PARA ESPERAR GASClient =====
-        function waitForGASClient(timeout = 5000) {
-            return new Promise((resolve, reject) => {
-                const startTime = Date.now();
-                
-                function checkGASClient() {
-                    if (typeof GASClient !== 'undefined' && GASClient !== null) {
-                        addLog('✅ GASClient detectado');
+        function waitForDependencies() {
+            return new Promise((resolve) => {
+                const checkDependencies = () => {
+                    if (typeof AppConfig !== 'undefined' && typeof GASClient !== 'undefined') {
                         resolve();
-                    } else if (Date.now() - startTime > timeout) {
-                        reject(new Error('Timeout esperando GASClient'));
                     } else {
-                        setTimeout(checkGASClient, 100);
+                        setTimeout(checkDependencies, 100);
                     }
-                }
-                
-                checkGASClient();
+                };
+                checkDependencies();
             });
         }
 
         // ===== INICIALIZACIÓN =====
-        document.addEventListener('DOMContentLoaded', function() {
-            addLog('Página de verificación de usuarios cargada');
+        document.addEventListener('DOMContentLoaded', async function() {
+            addLog('🚀 Inicializando sistema de verificación...');
             
-            // Mostrar configuración actual
-            if (typeof AppConfig !== 'undefined') {
-                document.getElementById('currentSheetId').textContent = AppConfig.SHEET_ID;
-                document.getElementById('currentScriptUrl').textContent = AppConfig.APPS_SCRIPT_URL;
+            try {
+                // Esperar a que las dependencias estén cargadas
+                await waitForDependencies();
                 
-                addLog('✅ Sistema listo. Conectado con:');
-                addLog(`   Sheet: ${AppConfig.SHEET_ID}`);
-                addLog(`   Script: ${AppConfig.APPS_SCRIPT_URL}`);
-            } else {
-                document.getElementById('currentSheetId').textContent = 'No disponible';
-                document.getElementById('currentScriptUrl').textContent = 'No disponible';
-                addLog('⚠️ AppConfig no disponible', 'warning');
+                // Mostrar configuración
+                if (typeof AppConfig !== 'undefined') {
+                    document.getElementById('currentSheetId').textContent = AppConfig.SHEET_ID;
+                    document.getElementById('currentScriptUrl').textContent = AppConfig.APPS_SCRIPT_URL;
+                    
+                    addLog('✅ Configuración cargada correctamente');
+                    addLog(`📊 Sheet ID: ${AppConfig.SHEET_ID}`);
+                    addLog(`🔗 Script URL: ${AppConfig.APPS_SCRIPT_URL}`);
+                }
+                
+                // Cargar usuarios
+                addLog('👥 Iniciando carga de usuarios...');
+                await loadUsers();
+                
+            } catch (error) {
+                addLog(`❌ Error en inicialización: ${error.message}`, 'error');
+                showConnectionError(`Error de inicialización: ${error.message}`);
             }
-            
-            // Esperar a que GASClient esté disponible
-            waitForGASClient().then(() => {
-                addLog('🚀 GASClient disponible, iniciando carga de usuarios...');
-                loadUsers();
-            }).catch(error => {
-                addLog(`❌ Error esperando GASClient: ${error.message}`, 'error');
-                // 🔥 NO usar datos mock - mostrar error
-                document.getElementById('usersLoading').style.display = 'none';
-                document.getElementById('noUsersMessage').innerHTML = `
-                    <div class="empty-icon">❌</div>
-                    <h3>GASClient no disponible</h3>
-                    <p>Error: ${error.message}</p>
-                    <button class="btn-primary" onclick="location.reload()">
-                        🔄 Recargar página
-                    </button>
-                `;
-                document.getElementById('noUsersMessage').style.display = 'block';
-            });
         });
     </script>
 </body>

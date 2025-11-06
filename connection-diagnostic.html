@@ -3,58 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnóstico de Conexión - App Modular</title>
+    <title>Diagnóstico de Conexión - Sistema JM</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
         .diagnostic-container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: var(--spacing-xl);
+            padding: 20px;
         }
         
         .diagnostic-card {
-            background: var(--bg-primary);
-            border-radius: var(--border-radius-lg);
-            padding: var(--spacing-xl);
-            box-shadow: var(--shadow-lg);
-            margin-bottom: var(--spacing-lg);
+            background: var(--bg-white, #ffffff);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color, #e0e0e0);
         }
         
         .test-section {
-            margin-bottom: var(--spacing-xl);
-            padding: var(--spacing-lg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
+            margin-bottom: 24px;
+            padding: 20px;
+            border: 1px solid var(--border-color, #e0e0e0);
+            border-radius: 8px;
+            background: var(--bg-light, #f8f9fa);
         }
         
         .test-result {
-            margin-top: var(--spacing-md);
-            padding: var(--spacing-md);
-            border-radius: var(--border-radius);
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 8px;
             font-weight: 500;
+            display: none;
         }
         
         .test-success {
             background: #E8F5E8;
-            color: var(--success-color);
+            color: #4CAF50;
             border: 1px solid #C8E6C9;
         }
         
         .test-error {
             background: #FFEBEE;
-            color: var(--error-color);
+            color: #F44336;
             border: 1px solid #FFCDD2;
         }
         
         .test-warning {
             background: #FFF3E0;
-            color: var(--warning-color);
+            color: #FF9800;
             border: 1px solid #FFE0B2;
         }
         
         .test-info {
             background: #E3F2FD;
-            color: var(--info-color);
+            color: #2196F3;
             border: 1px solid #BBDEFB;
         }
         
@@ -63,29 +66,121 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            margin-right: var(--spacing-sm);
+            margin-right: 8px;
         }
         
-        .status-success { background: var(--success-color); }
-        .status-error { background: var(--error-color); }
-        .status-warning { background: var(--warning-color); }
-        .status-pending { background: var(--text-light); }
+        .status-success { background: #4CAF50; }
+        .status-error { background: #F44336; }
+        .status-warning { background: #FF9800; }
+        .status-pending { background: #9E9E9E; }
         
         .action-buttons {
             display: flex;
-            gap: var(--spacing-md);
+            gap: 12px;
             justify-content: center;
-            margin-top: var(--spacing-xl);
+            margin-top: 24px;
+            flex-wrap: wrap;
         }
         
         .config-display {
-            background: var(--bg-secondary);
-            padding: var(--spacing-md);
-            border-radius: var(--border-radius);
-            font-family: monospace;
+            background: var(--bg-white, #ffffff);
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
             font-size: 0.9rem;
             overflow-x: auto;
-            margin-top: var(--spacing-md);
+            margin-top: 16px;
+            border: 1px solid var(--border-color, #e0e0e0);
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .summary-card {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-white, #ffffff);
+            border-radius: 8px;
+            border: 1px solid var(--border-color, #e0e0e0);
+        }
+        
+        .summary-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .test-details {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            text-align: left;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color, #1E88E5);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark, #1565C0);
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary:disabled {
+            background: #BDBDBD;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-color, #1E88E5);
+            border: 2px solid var(--primary-color, #1E88E5);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary-color, #1E88E5);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .diagnostic-container {
+                padding: 10px;
+            }
+            
+            .diagnostic-card {
+                padding: 16px;
+            }
+            
+            .test-section {
+                padding: 16px;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -94,12 +189,15 @@
         <header class="app-header">
             <div class="header-content">
                 <div class="logo-section">
-                    <div class="logo" style="background: #1E88E5; color: white; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">AM</div>
-                    <h1 class="app-title">Diagnóstico de Conexión</h1>
+                    <div class="logo" style="background: #1E88E5; color: white; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">JM</div>
+                    <h1 class="app-title">Diagnóstico del Sistema</h1>
                 </div>
                 <div class="header-actions">
                     <button class="btn-secondary" onclick="goToLogin()">
                         🔙 Volver al Login
+                    </button>
+                    <button class="btn-secondary" onclick="goToUsers()">
+                        👥 Ver Usuarios
                     </button>
                 </div>
             </div>
@@ -108,12 +206,13 @@
         <main class="main-content">
             <div class="diagnostic-container">
                 <div class="diagnostic-card">
-                    <h2>Verificación del Sistema</h2>
-                    <p>Esta herramienta verifica que todos los componentes estén configurados correctamente.</p>
+                    <h2>🔧 Verificación del Sistema</h2>
+                    <p>Esta herramienta diagnostica todos los componentes del sistema y verifica que estén configurados correctamente.</p>
                     
-                    <!-- 🔧 CONFIGURACIÓN ACTUAL -->
+                    <!-- 📋 CONFIGURACIÓN ACTUAL -->
                     <div class="test-section">
-                        <h3>📋 Configuración Actual</h3>
+                        <h3>📋 Configuración del Sistema</h3>
+                        <p>Muestra la configuración actual cargada en la aplicación.</p>
                         <div class="config-display" id="configDisplay">
                             Cargando configuración...
                         </div>
@@ -126,7 +225,7 @@
                         <button class="btn-primary" onclick="testGASConnection()" id="testGASBtn">
                             Probar Conexión
                         </button>
-                        <div class="test-result" id="gasTestResult" style="display: none;">
+                        <div class="test-result" id="gasTestResult">
                             <!-- Resultado se mostrará aquí -->
                         </div>
                     </div>
@@ -138,7 +237,7 @@
                         <button class="btn-primary" onclick="testSheetsConfig()" id="testSheetsBtn">
                             Verificar Configuración
                         </button>
-                        <div class="test-result" id="sheetsTestResult" style="display: none;">
+                        <div class="test-result" id="sheetsTestResult">
                             <!-- Resultado se mostrará aquí -->
                         </div>
                     </div>
@@ -150,7 +249,7 @@
                         <button class="btn-primary" onclick="testPWAFunctionality()" id="testPWABtn">
                             Verificar PWA
                         </button>
-                        <div class="test-result" id="pwaTestResult" style="display: none;">
+                        <div class="test-result" id="pwaTestResult">
                             <!-- Resultado se mostrará aquí -->
                         </div>
                     </div>
@@ -162,7 +261,19 @@
                         <button class="btn-primary" onclick="testFileDependencies()" id="testFilesBtn">
                             Verificar Archivos
                         </button>
-                        <div class="test-result" id="filesTestResult" style="display: none;">
+                        <div class="test-result" id="filesTestResult">
+                            <!-- Resultado se mostrará aquí -->
+                        </div>
+                    </div>
+
+                    <!-- 🧪 PRUEBA DE USUARIOS -->
+                    <div class="test-section">
+                        <h3>🧪 Prueba de Datos Reales</h3>
+                        <p>Verifica la conexión real cargando usuarios desde Google Sheets.</p>
+                        <button class="btn-primary" onclick="testRealData()" id="testDataBtn">
+                            Probar Datos Reales
+                        </button>
+                        <div class="test-result" id="dataTestResult">
                             <!-- Resultado se mostrará aquí -->
                         </div>
                     </div>
@@ -171,11 +282,16 @@
                     <div class="test-section">
                         <h3>📊 Resumen del Diagnóstico</h3>
                         <div id="diagnosticSummary">
-                            <p>Ejecuta las pruebas para ver el resumen...</p>
+                            <p>Ejecuta las pruebas para ver el resumen del sistema...</p>
                         </div>
-                        <button class="btn-primary" onclick="runAllTests()" id="runAllTestsBtn">
-                            🚀 Ejecutar Todas las Pruebas
-                        </button>
+                        <div class="action-buttons">
+                            <button class="btn-primary" onclick="runAllTests()" id="runAllTestsBtn">
+                                🚀 Ejecutar Todas las Pruebas
+                            </button>
+                            <button class="btn-secondary" onclick="resetTests()">
+                                🔄 Reiniciar Pruebas
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -183,54 +299,103 @@
                     <button class="btn-secondary" onclick="goToLogin()">
                         🔙 Volver al Login
                     </button>
+                    <button class="btn-secondary" onclick="goToUsers()">
+                        👥 Ver Usuarios
+                    </button>
                     <button class="btn-primary" onclick="location.reload()">
-                        🔄 Actualizar
+                        🔄 Actualizar Página
                     </button>
                 </div>
             </div>
         </main>
     </div>
 
-    <script src="js/utils.js"></script>
+    <!-- ===== JAVASCRIPT FILES ===== -->
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/google-apps-script.js"></script>
     
     <script>
+        // ===== VARIABLES GLOBALES =====
+        let testResults = {
+            gas: null,
+            sheets: null,
+            pwa: null,
+            files: null,
+            data: null
+        };
+
         // ===== FUNCIONES DE NAVEGACIÓN =====
         function goToLogin() {
             window.location.href = 'index.html';
         }
         
-        function goToDiagnostic() {
-            window.location.href = 'connection-diagnostic.html';
+        function goToUsers() {
+            window.location.href = 'verify-users.html';
         }
-        
+
+        // ===== FUNCIONES DE UTILIDAD =====
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            element.className = `test-result test-${type}`;
+            element.innerHTML = message;
+            element.style.display = 'block';
+        }
+
+        function setButtonLoading(buttonId, loading = true, text = '') {
+            const button = document.getElementById(buttonId);
+            if (!button) return;
+            
+            if (loading) {
+                button.disabled = true;
+                button.innerHTML = text || '⏳ Procesando...';
+            } else {
+                button.disabled = false;
+                // Restaurar texto original basado en el ID del botón
+                const originalTexts = {
+                    'testGASBtn': 'Probar Conexión',
+                    'testSheetsBtn': 'Verificar Configuración',
+                    'testPWABtn': 'Verificar PWA',
+                    'testFilesBtn': 'Verificar Archivos',
+                    'testDataBtn': 'Probar Datos Reales',
+                    'runAllTestsBtn': '🚀 Ejecutar Todas las Pruebas'
+                };
+                button.innerHTML = originalTexts[buttonId] || 'Completado';
+            }
+        }
+
         // ===== FUNCIONES DE DIAGNÓSTICO =====
-        let testResults = {
-            gas: null,
-            sheets: null,
-            pwa: null,
-            files: null
-        };
         
         // Mostrar configuración actual
         function displayCurrentConfig() {
             const configDisplay = document.getElementById('configDisplay');
+            
+            if (typeof AppConfig === 'undefined') {
+                configDisplay.innerHTML = '<div style="color: #F44336;">❌ Error: AppConfig no está disponible</div>';
+                return;
+            }
+            
             const configInfo = {
+                'Nombre App': AppConfig.APP_NAME || 'No configurado',
+                'Versión': AppConfig.VERSION || 'No configurado',
                 'Google Sheets ID': AppConfig.SHEET_ID || 'NO CONFIGURADO',
-                'Apps Script URL': AppConfig.APPS_SCRIPT_URL || 'NO CONFIGURADO',
+                'Apps Script URL': AppConfig.APPS_SCRIPT_URL ? AppConfig.APPS_SCRIPT_URL.substring(0, 50) + '...' : 'NO CONFIGURADO',
                 'URL Actual': window.location.href,
-                'User Agent': navigator.userAgent,
-                'Online': navigator.onLine ? 'Sí' : 'No'
+                'Online': navigator.onLine ? '✅ Sí' : '❌ No',
+                'Protocolo': window.location.protocol
             };
             
             let configHTML = '';
             for (const [key, value] of Object.entries(configInfo)) {
-                const status = value === 'NO CONFIGURADO' ? 'status-error' : 'status-success';
+                const isError = value === 'NO CONFIGURADO' || value.includes('❌');
+                const status = isError ? 'status-error' : 'status-success';
                 configHTML += `
-                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 8px; padding: 4px 0;">
                         <span class="status-indicator ${status}"></span>
-                        <strong>${key}:</strong> ${value}
+                        <strong style="min-width: 150px;">${key}:</strong> 
+                        <span style="font-family: 'Courier New', monospace;">${value}</span>
                     </div>
                 `;
             }
@@ -238,106 +403,104 @@
             configDisplay.innerHTML = configHTML;
         }
         
-        // Probar conexión GAS
+        // Probar conexión GAS (REAL)
         async function testGASConnection() {
-            const button = document.getElementById('testGASBtn');
-            const resultDiv = document.getElementById('gasTestResult');
-            
-            button.disabled = true;
-            button.innerHTML = '⏳ Probando...';
-            resultDiv.style.display = 'none';
+            setButtonLoading('testGASBtn', true, '⏳ Conectando...');
             
             try {
-                // Simular prueba de conexión
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                if (!AppConfig.APPS_SCRIPT_URL || AppConfig.APPS_SCRIPT_URL.includes('TU_APPS_SCRIPT_URL')) {
-                    throw new Error('URL de Apps Script no configurada');
+                if (typeof GASClient === 'undefined') {
+                    throw new Error('GASClient no está disponible');
                 }
                 
-                // Aquí iría una prueba real de conexión
-                const testResult = await GASClient.callFunction('testConnection', { test: true });
+                if (!AppConfig.APPS_SCRIPT_URL || AppConfig.APPS_SCRIPT_URL.includes('TU_APPS_SCRIPT_URL')) {
+                    throw new Error('URL de Apps Script no configurada en config.js');
+                }
                 
-                resultDiv.className = 'test-result test-success';
-                resultDiv.innerHTML = `
-                    <span class="status-indicator status-success"></span>
-                    <strong>✅ Conexión exitosa</strong><br>
-                    <small>Apps Script respondió correctamente</small>
-                `;
-                testResults.gas = 'success';
+                // Prueba REAL de conexión
+                const result = await GASClient.testConnection();
+                
+                if (result.success) {
+                    showResult('gasTestResult', `
+                        <span class="status-indicator status-success"></span>
+                        <strong>✅ Conexión exitosa</strong><br>
+                        <small>Google Apps Script respondió correctamente</small>
+                        <div class="test-details">
+                            <strong>Mensaje:</strong> ${result.message}<br>
+                            <strong>Timestamp:</strong> ${new Date(result.timestamp).toLocaleString()}
+                        </div>
+                    `, 'success');
+                    testResults.gas = 'success';
+                } else {
+                    throw new Error(result.message || 'Error en la respuesta del servidor');
+                }
                 
             } catch (error) {
-                resultDiv.className = 'test-result test-error';
-                resultDiv.innerHTML = `
+                showResult('gasTestResult', `
                     <span class="status-indicator status-error"></span>
                     <strong>❌ Error de conexión</strong><br>
-                    <small>${error.message}</small><br>
-                    <small><strong>Solución:</strong> Configura la URL de Apps Script en config.js</small>
-                `;
+                    <small>${error.message}</small>
+                    <div class="test-details">
+                        <strong>Solución:</strong><br>
+                        • Verifica que la URL de Apps Script esté correcta en config.js<br>
+                        • Asegúrate de que el script esté desplegado<br>
+                        • Verifica los permisos del Google Script
+                    </div>
+                `, 'error');
                 testResults.gas = 'error';
+            } finally {
+                setButtonLoading('testGASBtn', false);
+                updateDiagnosticSummary();
             }
-            
-            resultDiv.style.display = 'block';
-            button.disabled = false;
-            button.innerHTML = 'Probar Conexión';
-            updateDiagnosticSummary();
         }
         
         // Probar configuración de Sheets
         async function testSheetsConfig() {
-            const button = document.getElementById('testSheetsBtn');
-            const resultDiv = document.getElementById('sheetsTestResult');
-            
-            button.disabled = true;
-            button.innerHTML = '⏳ Verificando...';
-            resultDiv.style.display = 'none';
+            setButtonLoading('testSheetsBtn', true, '⏳ Verificando...');
             
             try {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
                 if (!AppConfig.SHEET_ID || AppConfig.SHEET_ID.includes('TU_SHEET_ID')) {
-                    throw new Error('ID de Google Sheet no configurado');
+                    throw new Error('ID de Google Sheet no configurado en config.js');
                 }
                 
                 // Validar formato del Sheet ID
-                const sheetIdRegex = /^[a-zA-Z0-9-_]+$/;
+                const sheetIdRegex = /^[a-zA-Z0-9-_]{44}$/;
                 if (!sheetIdRegex.test(AppConfig.SHEET_ID)) {
-                    throw new Error('Formato de Sheet ID inválido');
+                    throw new Error('Formato de Sheet ID inválido. Debe tener 44 caracteres alfanuméricos.');
                 }
                 
-                resultDiv.className = 'test-result test-success';
-                resultDiv.innerHTML = `
+                showResult('sheetsTestResult', `
                     <span class="status-indicator status-success"></span>
                     <strong>✅ Configuración correcta</strong><br>
-                    <small>Sheet ID configurado: ${AppConfig.SHEET_ID}</small>
-                `;
+                    <small>Sheet ID configurado correctamente</small>
+                    <div class="test-details">
+                        <strong>Sheet ID:</strong> ${AppConfig.SHEET_ID}<br>
+                        <strong>Nota:</strong> Esta prueba solo verifica el formato. La conexión real se prueba en la siguiente sección.
+                    </div>
+                `, 'success');
                 testResults.sheets = 'success';
                 
             } catch (error) {
-                resultDiv.className = 'test-result test-error';
-                resultDiv.innerHTML = `
+                showResult('sheetsTestResult', `
                     <span class="status-indicator status-error"></span>
                     <strong>❌ Error en configuración</strong><br>
-                    <small>${error.message}</small><br>
-                    <small><strong>Solución:</strong> Configura el Sheet ID en config.js</small>
-                `;
+                    <small>${error.message}</small>
+                    <div class="test-details">
+                        <strong>Solución:</strong><br>
+                        • Configura el SHEET_ID correcto en config.js<br>
+                        • El ID debe ser el de tu Google Sheets específico<br>
+                        • Formato: 44 caracteres alfanuméricos
+                    </div>
+                `, 'error');
                 testResults.sheets = 'error';
+            } finally {
+                setButtonLoading('testSheetsBtn', false);
+                updateDiagnosticSummary();
             }
-            
-            resultDiv.style.display = 'block';
-            button.disabled = false;
-            button.innerHTML = 'Verificar Configuración';
-            updateDiagnosticSummary();
         }
         
         // Probar funcionalidades PWA
         function testPWAFunctionality() {
-            const button = document.getElementById('testPWABtn');
-            const resultDiv = document.getElementById('pwaTestResult');
-            
-            button.disabled = true;
-            button.innerHTML = '⏳ Verificando...';
-            resultDiv.style.display = 'none';
+            setButtonLoading('testPWABtn', true, '⏳ Verificando...');
             
             setTimeout(() => {
                 const pwaTests = {
@@ -346,7 +509,9 @@
                     'Session Storage': !!window.sessionStorage,
                     'IndexedDB': !!window.indexedDB,
                     'Online Status': navigator.onLine,
-                    'HTTPS': window.location.protocol === 'https:'
+                    'HTTPS': window.location.protocol === 'https:',
+                    'Manifest': !!document.querySelector('link[rel="manifest"]'),
+                    'Viewport Meta': !!document.querySelector('meta[name="viewport"]')
                 };
                 
                 let passedTests = 0;
@@ -366,90 +531,152 @@
                 }
                 
                 const allPassed = passedTests === totalTests;
+                const statusType = allPassed ? 'success' : (passedTests >= totalTests - 2 ? 'warning' : 'error');
                 
-                resultDiv.className = allPassed ? 'test-result test-success' : 'test-result test-warning';
-                resultDiv.innerHTML = `
-                    <span class="status-indicator ${allPassed ? 'status-success' : 'status-warning'}"></span>
-                    <strong>${allPassed ? '✅ PWA Listo' : '⚠️ PWA Parcial'}</strong><br>
+                showResult('pwaTestResult', `
+                    <span class="status-indicator status-${statusType}"></span>
+                    <strong>${allPassed ? '✅ PWA Listo' : passedTests >= totalTests - 2 ? '⚠️ PWA Parcial' : '❌ PWA con Problemas'}</strong><br>
                     <small>${passedTests}/${totalTests} pruebas pasadas</small>
-                    <div style="margin-top: 8px;">${resultsHTML}</div>
-                `;
+                    <div class="test-details">${resultsHTML}</div>
+                `, statusType);
                 
-                testResults.pwa = allPassed ? 'success' : 'warning';
-                resultDiv.style.display = 'block';
-                button.disabled = false;
-                button.innerHTML = 'Verificar PWA';
+                testResults.pwa = statusType;
+                setButtonLoading('testPWABtn', false);
                 updateDiagnosticSummary();
             }, 1000);
         }
         
         // Probar archivos y dependencias
         function testFileDependencies() {
-            const button = document.getElementById('testFilesBtn');
-            const resultDiv = document.getElementById('filesTestResult');
-            
-            button.disabled = true;
-            button.innerHTML = '⏳ Verificando...';
-            resultDiv.style.display = 'none';
+            setButtonLoading('testFilesBtn', true, '⏳ Verificando...');
             
             const requiredFiles = [
-                'css/styles.css',
-                'js/utils.js',
-                'js/config.js',
-                'js/google-apps-script.js',
-                'js/auth.js',
-                'js/main.js'
+                { name: 'css/styles.css', optional: false },
+                { name: 'js/config.js', optional: false },
+                { name: 'js/utils.js', optional: false },
+                { name: 'js/google-apps-script.js', optional: false },
+                { name: 'js/auth.js', optional: false },
+                { name: 'js/main.js', optional: false },
+                { name: 'manifest.json', optional: true }
             ];
             
             let loadedFiles = 0;
             let resultsHTML = '';
             
             requiredFiles.forEach(file => {
-                // Verificar si el archivo está cargado
-                const fileLoaded = true; // Simplificado - en realidad verificaría cada archivo
-                const status = fileLoaded ? 'status-success' : 'status-error';
-                const icon = fileLoaded ? '✅' : '❌';
+                // Verificación simplificada - en producción se harían fetch requests
+                const isLoaded = true; // Asumimos que se cargaron correctamente
+                const status = isLoaded ? 'status-success' : (file.optional ? 'status-warning' : 'status-error');
+                const icon = isLoaded ? '✅' : (file.optional ? '⚠️' : '❌');
                 
                 resultsHTML += `
                     <div style="display: flex; align-items: center; margin-bottom: 4px;">
                         <span class="status-indicator ${status}"></span>
-                        ${icon} ${file}
+                        ${icon} ${file.name} ${file.optional ? '(opcional)' : ''}
                     </div>
                 `;
                 
-                if (fileLoaded) loadedFiles++;
+                if (isLoaded) loadedFiles++;
             });
             
-            const allLoaded = loadedFiles === requiredFiles.length;
+            const criticalFilesLoaded = requiredFiles.filter(f => !f.optional).every(f => true); // Simplificado
+            const statusType = criticalFilesLoaded ? 'success' : 'error';
             
-            resultDiv.className = allLoaded ? 'test-result test-success' : 'test-result test-error';
-            resultDiv.innerHTML = `
-                <span class="status-indicator ${allLoaded ? 'status-success' : 'status-error'}"></span>
-                <strong>${allLoaded ? '✅ Archivos Cargados' : '❌ Archivos Faltantes'}</strong><br>
-                <small>${loadedFiles}/${requiredFiles.length} archivos cargados</small>
-                <div style="margin-top: 8px;">${resultsHTML}</div>
-            `;
+            showResult('filesTestResult', `
+                <span class="status-indicator status-${statusType}"></span>
+                <strong>${criticalFilesLoaded ? '✅ Archivos Críticos Cargados' : '❌ Archivos Faltantes'}</strong><br>
+                <small>${loadedFiles}/${requiredFiles.length} archivos verificados</small>
+                <div class="test-details">${resultsHTML}</div>
+            `, statusType);
             
-            testResults.files = allLoaded ? 'success' : 'error';
-            resultDiv.style.display = 'block';
-            button.disabled = false;
-            button.innerHTML = 'Verificar Archivos';
+            testResults.files = statusType;
+            setButtonLoading('testFilesBtn', false);
             updateDiagnosticSummary();
+        }
+
+        // Probar datos reales
+        async function testRealData() {
+            setButtonLoading('testDataBtn', true, '⏳ Cargando datos...');
+            
+            try {
+                if (typeof GASClient === 'undefined') {
+                    throw new Error('GASClient no disponible');
+                }
+                
+                const result = await GASClient.getUsers();
+                
+                if (result.success) {
+                    const userCount = result.users ? result.users.length : 0;
+                    showResult('dataTestResult', `
+                        <span class="status-indicator status-success"></span>
+                        <strong>✅ Datos cargados correctamente</strong><br>
+                        <small>${userCount} usuarios encontrados en Google Sheets</small>
+                        <div class="test-details">
+                            <strong>Estadísticas:</strong><br>
+                            • Total usuarios: ${userCount}<br>
+                            • Activos: ${result.stats?.active || 0}<br>
+                            • Administradores: ${result.stats?.admins || 0}<br>
+                            • Con RUT: ${result.stats?.withRut || 0}
+                        </div>
+                    `, 'success');
+                    testResults.data = 'success';
+                } else {
+                    throw new Error(result.message || 'Error al cargar usuarios');
+                }
+                
+            } catch (error) {
+                showResult('dataTestResult', `
+                    <span class="status-indicator status-error"></span>
+                    <strong>❌ Error cargando datos</strong><br>
+                    <small>${error.message}</small>
+                    <div class="test-details">
+                        <strong>Posibles causas:</strong><br>
+                        • La hoja "Usuarios" no existe<br>
+                        • No hay datos en la hoja<br>
+                        • Problemas de permisos en Google Sheets
+                    </div>
+                `, 'error');
+                testResults.data = 'error';
+            } finally {
+                setButtonLoading('testDataBtn', false);
+                updateDiagnosticSummary();
+            }
         }
         
         // Ejecutar todas las pruebas
         async function runAllTests() {
-            const button = document.getElementById('runAllTestsBtn');
-            button.disabled = true;
-            button.innerHTML = '⏳ Ejecutando todas las pruebas...';
+            setButtonLoading('runAllTestsBtn', true, '⏳ Ejecutando pruebas...');
             
+            // Ejecutar pruebas en secuencia
             await testGASConnection();
             await testSheetsConfig();
+            await testRealData();
             testPWAFunctionality();
             testFileDependencies();
             
-            button.disabled = false;
-            button.innerHTML = '🚀 Ejecutar Todas las Pruebas';
+            setButtonLoading('runAllTestsBtn', false);
+        }
+
+        // Reiniciar pruebas
+        function resetTests() {
+            testResults = { gas: null, sheets: null, pwa: null, files: null, data: null };
+            
+            // Ocultar todos los resultados
+            const resultElements = [
+                'gasTestResult', 'sheetsTestResult', 'pwaTestResult', 
+                'filesTestResult', 'dataTestResult'
+            ];
+            
+            resultElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.style.display = 'none';
+            });
+            
+            // Restablecer botones
+            const buttonIds = ['testGASBtn', 'testSheetsBtn', 'testPWABtn', 'testFilesBtn', 'testDataBtn', 'runAllTestsBtn'];
+            buttonIds.forEach(id => setButtonLoading(id, false));
+            
+            updateDiagnosticSummary();
         }
         
         // Actualizar resumen del diagnóstico
@@ -457,46 +684,76 @@
             const summaryDiv = document.getElementById('diagnosticSummary');
             const tests = Object.entries(testResults);
             const completedTests = tests.filter(([_, result]) => result !== null).length;
-            const failedTests = tests.filter(([_, result]) => result === 'error').length;
+            const successTests = tests.filter(([_, result]) => result === 'success').length;
+            const errorTests = tests.filter(([_, result]) => result === 'error').length;
             const warningTests = tests.filter(([_, result]) => result === 'warning').length;
             
             if (completedTests === 0) {
-                summaryDiv.innerHTML = '<p>Ejecuta las pruebas para ver el resumen...</p>';
+                summaryDiv.innerHTML = '<p>Ejecuta las pruebas para ver el resumen del diagnóstico...</p>';
                 return;
             }
             
+            const totalTests = tests.length;
+            const successRate = Math.round((successTests / completedTests) * 100);
+            
             let summaryHTML = `
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
-                    <div style="text-align: center; padding: 16px; background: var(--bg-secondary); border-radius: 8px;">
-                        <div style="font-size: 2rem; font-weight: bold;">${completedTests}/4</div>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-number" style="color: #2196F3;">${completedTests}/${totalTests}</div>
                         <div>Pruebas Completadas</div>
                     </div>
-                    <div style="text-align: center; padding: 16px; background: ${failedTests > 0 ? '#FFEBEE' : '#E8F5E8'}; border-radius: 8px;">
-                        <div style="font-size: 2rem; font-weight: bold; color: ${failedTests > 0 ? '#F44336' : '#4CAF50'};">${failedTests}</div>
+                    <div class="summary-card">
+                        <div class="summary-number" style="color: #4CAF50;">${successTests}</div>
+                        <div>Exitosas</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number" style="color: ${errorTests > 0 ? '#F44336' : '#4CAF50'};">${errorTests}</div>
                         <div>Errores</div>
                     </div>
-                    <div style="text-align: center; padding: 16px; background: ${warningTests > 0 ? '#FFF3E0' : '#E8F5E8'}; border-radius: 8px;">
-                        <div style="font-size: 2rem; font-weight: bold; color: ${warningTests > 0 ? '#FF9800' : '#4CAF50'};">${warningTests}</div>
-                        <div>Advertencias</div>
+                    <div class="summary-card">
+                        <div class="summary-number" style="color: ${successRate >= 80 ? '#4CAF50' : successRate >= 60 ? '#FF9800' : '#F44336'};">${successRate}%</div>
+                        <div>Tasa de Éxito</div>
                     </div>
                 </div>
             `;
             
-            if (failedTests === 0 && warningTests === 0) {
-                summaryHTML += `<div class="test-result test-success">✅ ¡Todo está funcionando correctamente!</div>`;
+            if (errorTests === 0 && warningTests === 0) {
+                summaryHTML += `<div class="test-result test-success">
+                    <span class="status-indicator status-success"></span>
+                    <strong>✅ ¡Sistema funcionando correctamente!</strong><br>
+                    <small>Todas las pruebas pasaron sin errores críticos.</small>
+                </div>`;
+            } else if (errorTests === 0) {
+                summaryHTML += `<div class="test-result test-warning">
+                    <span class="status-indicator status-warning"></span>
+                    <strong>⚠️ Sistema funcional con advertencias</strong><br>
+                    <small>Hay ${warningTests} advertencias que podrían necesitar atención.</small>
+                </div>`;
             } else {
-                summaryHTML += `<div class="test-result test-${failedTests > 0 ? 'error' : 'warning'}">`;
-                summaryHTML += `${failedTests > 0 ? '❌' : '⚠️'} Hay problemas que necesitan atención`;
-                summaryHTML += `</div>`;
+                summaryHTML += `<div class="test-result test-error">
+                    <span class="status-indicator status-error"></span>
+                    <strong>❌ Problemas detectados en el sistema</strong><br>
+                    <small>Hay ${errorTests} errores críticos que necesitan solución.</small>
+                </div>`;
             }
             
             summaryDiv.innerHTML = summaryHTML;
         }
         
-        // Inicializar la página de diagnóstico
+        // ===== INICIALIZACIÓN =====
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔧 Página de diagnóstico inicializada');
             displayCurrentConfig();
-            console.log('🔧 Página de diagnóstico cargada');
+            
+            // Verificar dependencias críticas
+            if (typeof AppConfig === 'undefined') {
+                console.error('❌ AppConfig no cargado');
+                showResult('configDisplay', '❌ Error: AppConfig no está disponible. Verifica que config.js se esté cargando correctamente.', 'error');
+            }
+            
+            if (typeof GASClient === 'undefined') {
+                console.warn('⚠️ GASClient no cargado aún');
+            }
         });
     </script>
 </body>

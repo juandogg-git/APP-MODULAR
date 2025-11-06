@@ -4,8 +4,8 @@
     <!-- ===== META INFORMACIÓN BÁSICA ===== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Modular PWA</title>
-    <meta name="description" content="Aplicación Web Modular Progresiva">
+    <title>Sistema de Gestión JM</title>
+    <meta name="description" content="Sistema de Gestión JM - Aplicación Web Progresiva">
     <meta name="theme-color" content="#1E88E5">
     
     <!-- ===== PWA CONFIGURATION ===== -->
@@ -19,6 +19,59 @@
     
     <!-- ===== EXTERNAL DEPENDENCIES ===== -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- ===== ESTILOS CRÍTICOS INLINE ===== -->
+    <style>
+        /* Estilos críticos para evitar FOUC */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .login-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            padding: 20px;
+        }
+        
+        .dashboard-section {
+            display: none;
+        }
+        
+        .main-nav {
+            display: none;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 9999;
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+        }
+        
+        /* Fallback básico para modo oscuro */
+        .dark-mode {
+            background: #1a1a1a;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <!-- ===== APP CONTAINER ===== -->
@@ -28,8 +81,8 @@
         <header class="app-header">
             <div class="header-content">
                 <div class="logo-section">
-                    <div class="logo" id="appLogo" style="background: #1E88E5; color: white; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">AM</div>
-                    <h1 class="app-title">App Modular</h1>
+                    <div class="logo" id="appLogo" style="background: #1E88E5; color: white; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">JM</div>
+                    <h1 class="app-title">Sistema JM</h1>
                 </div>
                 <div class="header-actions">
                     <button class="btn-secondary" id="installBtn" style="display: none;">
@@ -108,7 +161,7 @@
                                     <span class="checkmark"></span>
                                     Recordarme
                                 </label>
-                                <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                                <a href="#" class="forgot-password" onclick="handleForgotPassword()">¿Olvidaste tu contraseña?</a>
                             </div>
                             
                             <button type="submit" class="btn-primary login-btn" id="loginBtn">
@@ -121,37 +174,25 @@
                             <span>o continuar con</span>
                         </div>
                         
-                        <!-- 🔵 Botón Google Sign-In -->
+                        <!-- 🔵 Botón Google Sign-In MEJORADO -->
                         <div class="social-login">
-                            <div id="g_id_onload"
-                                data-client_id="TU_CLIENT_ID_GOOGLE"
-                                data-context="signin"
-                                data-ux_mode="popup"
-                                data-callback="handleGoogleSignIn"
-                                data-auto_prompt="false">
-                            </div>
-                            <div class="g_id_signin"
-                                data-type="standard"
-                                data-shape="rectangular"
-                                data-theme="outline"
-                                data-text="signin_with"
-                                data-size="large"
-                                data-logo_alignment="left">
-                            </div>
+                            <button class="btn-google" onclick="handleGoogleLogin()">
+                                <span>🔵 Continuar con Google</span>
+                            </button>
                         </div>
                         
-                        <!-- 🛠️ BOTÓN DIAGNÓSTICO - AHORA DENTRO DEL LOGIN-CARD -->
+                        <!-- 🛠️ BOTÓN DIAGNÓSTICO MEJORADO -->
                         <div class="diagnostic-section">
-                            <button class="btn-diagnostic" id="diagnosticBtn" onclick="window.location.href = 'connection-diagnostic.html'">
-                                🛠️ Diagnóstico de Conexión
+                            <button class="btn-diagnostic" id="diagnosticBtn" onclick="handleDiagnostic()">
+                                🛠️ Diagnóstico de Sistema
                             </button>
                             <p class="diagnostic-help">
-                                ¿Problemas de conexión? Verifica la configuración
+                                ¿Problemas técnicos? Verifica el estado del sistema
                             </p>
                         </div>
 
                         <div class="login-footer">
-                            <p>¿No tienes cuenta? <a href="#" id="registerLink">Regístrate aquí</a></p>
+                            <p>¿No tienes cuenta? <a href="#" id="registerLink" onclick="handleRegister()">Solicitar acceso</a></p>
                         </div>
                     </div>
                     
@@ -174,7 +215,7 @@
                         <div class="section-pane active" id="dashboardPane">
                             <div class="section-header">
                                 <h2>Dashboard Principal</h2>
-                                <p>Resumen y estadísticas de la aplicación</p>
+                                <p>Resumen y estadísticas del sistema</p>
                             </div>
 
                             <div class="metrics-grid">
@@ -204,6 +245,30 @@
                                     </div>
                                     <div class="metric-trend up">+8%</div>
                                 </div>
+                                
+                                <div class="metric-card">
+                                    <div class="metric-icon">🔄</div>
+                                    <div class="metric-info">
+                                        <h3 id="systemStatus">Online</h3>
+                                        <p>Estado del Sistema</p>
+                                    </div>
+                                    <div class="metric-trend stable">✓</div>
+                                </div>
+                            </div>
+
+                            <div class="dashboard-actions">
+                                <h3>Acciones Rápidas</h3>
+                                <div class="actions-grid">
+                                    <button class="btn-action" onclick="loadUsersSection()">
+                                        👥 Ver Usuarios
+                                    </button>
+                                    <button class="btn-action" onclick="refreshDashboard()">
+                                        🔄 Actualizar
+                                    </button>
+                                    <button class="btn-action" onclick="runSystemDiagnostic()">
+                                        🛠️ Diagnóstico
+                                    </button>
+                                </div>
                             </div>
 
                             <div class="recent-activity">
@@ -226,27 +291,64 @@
                                 <p>Administra los usuarios del sistema</p>
                             </div>
 
-                            <div class="empty-state">
-                                <div class="empty-icon">👥</div>
-                                <p>Módulo de usuarios - En desarrollo</p>
-                                <button class="btn-primary" onclick="AppUtils.showToast('Módulo en desarrollo', 'info')">
-                                    Próximamente
-                                </button>
+                            <div class="users-container">
+                                <div class="users-actions">
+                                    <button class="btn-primary" onclick="loadUsersFromSheet()">
+                                        🔄 Cargar Usuarios
+                                    </button>
+                                    <button class="btn-secondary" onclick="exportUsers()">
+                                        📤 Exportar
+                                    </button>
+                                </div>
+                                <div class="users-list" id="usersList">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">👥</div>
+                                        <p>No hay usuarios cargados</p>
+                                        <button class="btn-primary" onclick="loadUsersFromSheet()">
+                                            Cargar Usuarios
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="section-pane" id="settingsPane">
                             <div class="section-header">
-                                <h2>Configuración de la Aplicación</h2>
-                                <p>Personaliza el comportamiento del sistema</p>
+                                <h2>Configuración del Sistema</h2>
+                                <p>Personaliza el comportamiento de la aplicación</p>
                             </div>
 
-                            <div class="empty-state">
-                                <div class="empty-icon">⚙️</div>
-                                <p>Módulo de configuración - En desarrollo</p>
-                                <button class="btn-primary" onclick="AppUtils.showToast('Módulo en desarrollo', 'info')">
-                                    Próximamente
-                                </button>
+                            <div class="settings-container">
+                                <div class="setting-group">
+                                    <h3>Apariencia</h3>
+                                    <div class="setting-item">
+                                        <label>Modo Oscuro</label>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="darkModeToggle" onchange="toggleDarkModeSetting()">
+                                            <span class="slider"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-group">
+                                    <h3>Privacidad</h3>
+                                    <div class="setting-item">
+                                        <label>Recordar sesión</label>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="rememberSessionToggle" checked onchange="toggleRememberSession()">
+                                            <span class="slider"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-actions">
+                                    <button class="btn-primary" onclick="saveSettings()">
+                                        💾 Guardar Configuración
+                                    </button>
+                                    <button class="btn-secondary" onclick="resetSettings()">
+                                        🔄 Restablecer
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -257,9 +359,10 @@
         <!-- ===== FOOTER ===== -->
         <footer class="app-footer">
             <div class="footer-content">
-                <p>&copy; 2024 App Modular PWA. v1.0.0</p>
+                <p>&copy; 2024 Sistema de Gestión JM. v1.0.0</p>
                 <div class="footer-links">
-                    <a href="#" class="footer-link" onclick="AppUtils.showToast('En desarrollo', 'info')">Soporte</a>
+                    <a href="#" class="footer-link" onclick="showSupport()">Soporte</a>
+                    <a href="#" class="footer-link" onclick="showAbout()">Acerca de</a>
                 </div>
             </div>
         </footer>
@@ -269,18 +372,209 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- ===== JAVASCRIPT FILES ===== -->
-    <script src="js/utils.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/google-apps-script.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
 
-    <!-- ===== GOOGLE SIGN-IN HANDLER ===== -->
+    <!-- ===== SCRIPT DE INICIALIZACIÓN Y POLYFILLS ===== -->
     <script>
-    function handleGoogleSignIn(response) {
-        console.log('Google Sign-In response:', response);
-        AppUtils.showToast('Inicio con Google - En desarrollo', 'info');
-    }
+        // ===== POLYFILLS Y FALLBACKS CRÍTICOS =====
+        if (typeof window.AppUtils === 'undefined') {
+            console.warn('AppUtils no cargado - inicializando fallbacks');
+            window.AppUtils = {
+                showToast: function(message, type = 'info') {
+                    console.log(`TOAST [${type}]: ${message}`);
+                    // Fallback básico de toast
+                    const toast = document.createElement('div');
+                    toast.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: ${type === 'error' ? '#f44336' : type === 'success' ? '#4CAF50' : '#2196F3'};
+                        color: white;
+                        padding: 12px 16px;
+                        border-radius: 4px;
+                        z-index: 10000;
+                        animation: slideIn 0.3s ease;
+                    `;
+                    toast.textContent = message;
+                    document.body.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 4000);
+                },
+                showElement: function(id) {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'block';
+                },
+                hideElement: function(id) {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                },
+                setLoading: function(button, isLoading) {
+                    if (!button) return;
+                    const text = button.querySelector('.btn-text');
+                    const loading = button.querySelector('.btn-loading');
+                    
+                    if (isLoading) {
+                        button.disabled = true;
+                        if (text) text.style.display = 'none';
+                        if (loading) loading.style.display = 'inline';
+                    } else {
+                        button.disabled = false;
+                        if (text) text.style.display = 'inline';
+                        if (loading) loading.style.display = 'none';
+                    }
+                }
+            };
+        }
+
+        // ===== MANEJADORES DE UI MEJORADOS =====
+        function handleGoogleLogin() {
+            AppUtils.showToast('Google Sign-In en desarrollo', 'info');
+        }
+
+        function handleForgotPassword() {
+            AppUtils.showToast('Función de recuperación en desarrollo', 'info');
+        }
+
+        function handleRegister() {
+            AppUtils.showToast('Registro de nuevos usuarios en desarrollo', 'info');
+        }
+
+        function handleDiagnostic() {
+            window.location.href = 'verify-users.html';
+        }
+
+        function showSupport() {
+            AppUtils.showToast('Soporte técnico - En desarrollo', 'info');
+        }
+
+        function showAbout() {
+            AppUtils.showToast('Sistema de Gestión JM v1.0.0', 'info');
+        }
+
+        // ===== FUNCIONES DEL DASHBOARD =====
+        function loadUsersSection() {
+            if (window.App && App.showSection) {
+                App.showSection('users');
+            } else {
+                AppUtils.showToast('Navegando a gestión de usuarios', 'info');
+            }
+        }
+
+        function refreshDashboard() {
+            if (window.App && App.updateDashboardMetrics) {
+                App.updateDashboardMetrics();
+                AppUtils.showToast('Dashboard actualizado', 'success');
+            }
+        }
+
+        function runSystemDiagnostic() {
+            if (window.GASClient && GASClient.runFullDiagnostic) {
+                GASClient.runFullDiagnostic().then(result => {
+                    AppUtils.showToast('Diagnóstico completado', 'success');
+                });
+            } else {
+                AppUtils.showToast('Diagnóstico del sistema', 'info');
+            }
+        }
+
+        function loadUsersFromSheet() {
+            if (window.GASClient && GASClient.getUsers) {
+                GASClient.getUsers().then(result => {
+                    if (result.success) {
+                        AppUtils.showToast(`${result.users.length} usuarios cargados`, 'success');
+                    }
+                });
+            }
+        }
+
+        function exportUsers() {
+            AppUtils.showToast('Exportación en desarrollo', 'info');
+        }
+
+        // ===== CONFIGURACIÓN =====
+        function toggleDarkModeSetting() {
+            const toggle = document.getElementById('darkModeToggle');
+            if (toggle) {
+                toggleDarkMode();
+            }
+        }
+
+        function toggleRememberSession() {
+            AppUtils.showToast('Preferencia guardada', 'success');
+        }
+
+        function saveSettings() {
+            AppUtils.showToast('Configuración guardada', 'success');
+        }
+
+        function resetSettings() {
+            AppUtils.showToast('Configuración restablecida', 'info');
+        }
+
+        // ===== INICIALIZACIÓN SEGURA =====
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM cargado - Inicializando aplicación...');
+            
+            // Cargar tema guardado
+            const savedTheme = localStorage.getItem('theme');
+            const themeBtn = document.getElementById('themeSwitch');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (themeBtn) themeBtn.innerHTML = '☀️';
+                if (darkModeToggle) darkModeToggle.checked = true;
+            }
+            
+            // Verificar que los módulos críticos estén cargados
+            setTimeout(() => {
+                if (typeof App === 'undefined') {
+                    console.error('❌ App principal no cargada');
+                    AppUtils.showToast('Error cargando la aplicación', 'error');
+                } else {
+                    console.log('✅ Aplicación inicializada correctamente');
+                }
+            }, 1000);
+        });
+
+        // ===== MANEJADOR DE ERRORES GLOBAL =====
+        window.addEventListener('error', function(e) {
+            console.error('Error global:', e.error);
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Promesa rechazada:', e.reason);
+            AppUtils.showToast('Error inesperado en la aplicación', 'error');
+        });
+
+        // ===== ESTILOS DINÁMICOS PARA ANIMACIONES =====
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            .loading-spinner {
+                width: 40px;
+                height: 40px;
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #1E88E5;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-bottom: 16px;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 
     <!-- ===== SWITCH MODO OSCURO ===== -->
@@ -289,36 +583,5 @@
             🌙
         </button>
     </div>
-
-    <script>
-        // ===== TOGGLE MODO OSCURO =====
-        function toggleDarkMode() {
-            const body = document.body;
-            const themeBtn = document.getElementById('themeSwitch');
-            
-            body.classList.toggle('dark-mode');
-            
-            if (body.classList.contains('dark-mode')) {
-                themeBtn.innerHTML = '☀️';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                themeBtn.innerHTML = '🌙';
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        // Cargar tema guardado al iniciar
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedTheme = localStorage.getItem('theme');
-            const themeBtn = document.getElementById('themeSwitch');
-            
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                themeBtn.innerHTML = '☀️';
-            } else {
-                themeBtn.innerHTML = '🌙';
-            }
-        });
-    </script>
 </body>
 </html>

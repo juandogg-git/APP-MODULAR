@@ -21,6 +21,9 @@ class ModularApp {
             this.isInitialized = true;
             console.log('✅ App Modular PWA inicializada correctamente');
 
+            // Mostrar toast de bienvenida
+            AppUtils.showToast('Sistema cargado correctamente', 'success');
+
         } catch (error) {
             console.error('❌ Error inicializando la aplicación:', error);
             AppUtils.showToast('Error inicializando la aplicación', 'error');
@@ -31,7 +34,17 @@ class ModularApp {
         // Los módulos se inicializan automáticamente al cargarse
         // AuthManager ya se inicializa en su constructor
         
-        // Aquí se pueden inicializar otros módulos cuando se agreguen
+        // Configuración por defecto si no existe
+        if (typeof AppConfig === 'undefined') {
+            window.AppConfig = {
+                APP_NAME: 'App Modular',
+                ROLES: {
+                    ADMIN: 'admin',
+                    USER: 'user'
+                }
+            };
+        }
+        
         console.log('Módulos core inicializados');
     }
 
@@ -52,6 +65,9 @@ class ModularApp {
             AppUtils.showToast('Tu sesión ha expirado', 'warning');
         });
 
+        // Navegación entre secciones
+        this.setupNavigation();
+
         // Manejar errors globales
         window.addEventListener('error', (e) => {
             console.error('Error global:', e.error);
@@ -60,8 +76,71 @@ class ModularApp {
         // Manejar promesas no capturadas
         window.addEventListener('unhandledrejection', (e) => {
             console.error('Promesa no capturada:', e.reason);
+            AppUtils.showToast('Error inesperado en la aplicación', 'error');
             e.preventDefault();
         });
+    }
+
+    setupNavigation() {
+        // Navegación principal
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = item.getAttribute('data-section');
+                this.showSection(section);
+            });
+        });
+
+        // Botón diagnóstico
+        const diagnosticBtn = document.getElementById('diagnosticBtn');
+        if (diagnosticBtn) {
+            diagnosticBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = 'verify-users.html';
+            });
+        }
+    }
+
+    showSection(sectionName) {
+        // Ocultar todos los paneles
+        const panes = document.querySelectorAll('.section-pane');
+        panes.forEach(pane => pane.classList.remove('active'));
+        
+        // Mostrar panel seleccionado
+        const targetPane = document.getElementById(sectionName + 'Pane');
+        if (targetPane) {
+            targetPane.classList.add('active');
+        }
+        
+        // Actualizar navegación activa
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('data-section') === sectionName) {
+                item.classList.add('active');
+            }
+        });
+        
+        // Actualizar breadcrumbs
+        this.updateBreadcrumbs(sectionName);
+    }
+
+    updateBreadcrumbs(sectionName) {
+        const breadcrumbs = document.getElementById('breadcrumbs');
+        if (breadcrumbs) {
+            const sectionTitles = {
+                dashboard: 'Dashboard',
+                users: 'Usuarios',
+                settings: 'Configuración'
+            };
+            
+            breadcrumbs.innerHTML = `
+                <a href="#dashboard" class="breadcrumb-item">Dashboard</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item active">${sectionTitles[sectionName] || sectionName}</span>
+            `;
+        }
     }
 
     checkAuthStatus() {
@@ -80,10 +159,11 @@ class ModularApp {
         // Cargar módulos específicos del usuario
         this.loadUserModules(user);
         
-        // Inicializar dashboard si existe
-        if (typeof Dashboard !== 'undefined') {
-            Dashboard.init();
-        }
+        // Mostrar dashboard por defecto
+        this.showSection('dashboard');
+        
+        // Actualizar métricas del dashboard
+        this.updateDashboardMetrics();
     }
 
     onUserLogout() {
@@ -113,7 +193,7 @@ class ModularApp {
             const section = item.getAttribute('data-section');
             
             // Ejemplo: ocultar configuración para usuarios no admin
-            if (section === 'settings' && userRole !== AppConfig.ROLES.ADMIN) {
+            if (section === 'settings' && userRole !== 'admin') {
                 item.style.display = 'none';
             } else {
                 item.style.display = 'block';
@@ -141,22 +221,29 @@ class ModularApp {
         }
     }
 
+    updateDashboardMetrics() {
+        // Actualizar métricas del dashboard
+        if (window.GASClient) {
+            GASClient.getUsers().then(result => {
+                if (result.success && result.users) {
+                    document.getElementById('totalUsers').textContent = result.users.length;
+                }
+            });
+        }
+        
+        // Actualizar otras métricas
+        document.getElementById('activeSessions').textContent = '1';
+        document.getElementById('totalLogins').textContent = '1';
+    }
+
     loadUserModules(user) {
         // Cargar módulos específicos basados en el usuario
         console.log('Cargando módulos para usuario:', user.role);
-        
-        // Ejemplo: cargar dashboard manager para todos los usuarios
-        // Los módulos se cargan mediante script tags en el HTML
     }
 
     unloadUserModules() {
         // Limpiar módulos específicos del usuario
         console.log('Descargando módulos de usuario');
-        
-        // Los módulos pueden limpiar sus estados internos
-        if (typeof Dashboard !== 'undefined' && Dashboard.cleanup) {
-            Dashboard.cleanup();
-        }
     }
 
     // Registrar módulos dinámicamente
@@ -191,14 +278,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     await window.App.init();
     
     // Exponer utilidades globales para desarrollo
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    if (AppUtils.isLocalhost()) {
         window.AppUtils = AppUtils;
         window.Auth = Auth;
-        window.GASClient = GASClient;
+        console.log('🔧 Modo desarrollo: utilidades expuestas globalmente');
     }
 });
-
-// Exportar para módulos (si se usa ES6 modules)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { ModularApp, AppUtils, Auth, GASClient };
-}

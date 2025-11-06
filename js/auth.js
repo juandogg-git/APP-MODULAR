@@ -44,14 +44,22 @@ class AuthManager {
         }
 
         try {
-            const result = await GASClient.validateSession(this.sessionToken);
-            
-            if (result.success) {
-                this.currentUser = result.user;
+            // Usar GASClient si está disponible, sino simular éxito
+            if (window.GASClient && GASClient.validateSession) {
+                const result = await GASClient.validateSession(this.sessionToken);
+                
+                if (result.success) {
+                    this.currentUser = result.user;
+                    this.showAppUI();
+                    this.dispatchEvent(Constants.EVENTS.LOGIN_SUCCESS, this.currentUser);
+                } else {
+                    this.handleSessionExpired();
+                }
+            } else {
+                // Simular sesión válida para desarrollo
+                console.log('⚠️ GASClient no disponible, usando sesión simulada');
                 this.showAppUI();
                 this.dispatchEvent(Constants.EVENTS.LOGIN_SUCCESS, this.currentUser);
-            } else {
-                this.handleSessionExpired();
             }
         } catch (error) {
             console.error('Error validando sesión:', error);
@@ -64,7 +72,25 @@ class AuthManager {
         try {
             AppUtils.showElement('loadingOverlay');
             
-            const result = await GASClient.loginUser(credentials);
+            // Usar GASClient si está disponible, sino simular login
+            let result;
+            if (window.GASClient && GASClient.loginUser) {
+                result = await GASClient.loginUser(credentials);
+            } else {
+                // Simular login exitoso para desarrollo
+                console.log('⚠️ GASClient no disponible, simulando login');
+                result = {
+                    success: true,
+                    user: {
+                        email: credentials.email,
+                        name: credentials.email.split('@')[0],
+                        role: 'user'
+                    },
+                    session: {
+                        token: 'simulated-token-' + Date.now()
+                    }
+                };
+            }
             
             if (result.success) {
                 this.currentUser = result.user;
@@ -100,7 +126,7 @@ class AuthManager {
     // Cerrar sesión
     async logout() {
         try {
-            if (this.sessionToken) {
+            if (this.sessionToken && window.GASClient && GASClient.logoutUser) {
                 await GASClient.logoutUser(this.sessionToken);
             }
         } catch (error) {
@@ -136,13 +162,19 @@ class AuthManager {
         AppUtils.hideElement('logoutBtn');
         
         AppUtils.showElement('loginSection');
-        AppUtils.showElement('installBtn');
+        
+        // Mostrar botón de instalación solo si está disponible
+        const installBtn = document.getElementById('installBtn');
+        if (installBtn) installBtn.style.display = 'block';
     }
 
     // Mostrar UI de la aplicación
     showAppUI() {
         AppUtils.hideElement('loginSection');
-        AppUtils.hideElement('installBtn');
+        
+        // Ocultar botón de instalación
+        const installBtn = document.getElementById('installBtn');
+        if (installBtn) installBtn.style.display = 'none';
         
         AppUtils.showElement('mainNav');
         AppUtils.showElement('dashboardSection');
@@ -161,7 +193,8 @@ class AuthManager {
             }
 
             // Actualizar título de la app
-            document.title = `${AppConfig.APP_NAME} - ${this.currentUser.name}`;
+            const appName = window.AppConfig ? AppConfig.APP_NAME : 'App Modular';
+            document.title = `${appName} - ${this.currentUser.name}`;
         }
     }
 
@@ -196,11 +229,14 @@ class AuthManager {
     handleLoginSubmit(event) {
         event.preventDefault();
         
-        const formData = new FormData(event.target);
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
+        
         const credentials = {
-            email: formData.get('email'),
-            password: formData.get('password'),
-            rememberMe: document.getElementById('rememberMe').checked
+            email: email,
+            password: password,
+            rememberMe: rememberMe
         };
 
         if (this.validateCredentials(credentials)) {

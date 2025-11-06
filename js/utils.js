@@ -38,24 +38,23 @@ class AppUtils {
         return toast;
     }
 
-// Navegación entre páginas
-static navigateTo(page) {
-    try {
-        window.location.href = page;
-        return true;
-    } catch (error) {
-        console.error('Error navegando a:', page, error);
-        return false;
+    // Navegación entre páginas
+    static navigateTo(page) {
+        try {
+            window.location.href = page;
+            return true;
+        } catch (error) {
+            console.error('Error navegando a:', page, error);
+            return false;
+        }
     }
-}
 
-// Verificar si estamos en localhost (para desarrollo)
-static isLocalhost() {
-    return window.location.hostname === 'localhost' || 
-           window.location.hostname === '127.0.0.1' ||
-           window.location.hostname === '';
-}
-
+    // Verificar si estamos en localhost (para desarrollo)
+    static isLocalhost() {
+        return window.location.hostname === 'localhost' || 
+               window.location.hostname === '127.0.0.1' ||
+               window.location.hostname === '';
+    }
 
     static createToastContainer() {
         const container = document.createElement('div');
@@ -145,4 +144,20 @@ static isLocalhost() {
             button.classList.remove('loading');
         }
     }
+}
+
+// Constantes globales (si no existen en config.js)
+if (typeof Constants === 'undefined') {
+    window.Constants = {
+        STORAGE_KEYS: {
+            USER_SESSION: 'user_session',
+            REMEMBER_ME: 'remember_me'
+        },
+        EVENTS: {
+            LOGIN_SUCCESS: 'loginSuccess',
+            LOGOUT: 'logout',
+            SESSION_EXPIRED: 'sessionExpired',
+            AUTH_ERROR: 'authError'
+        }
+    };
 }
